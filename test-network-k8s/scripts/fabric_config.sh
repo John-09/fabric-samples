@@ -6,7 +6,7 @@
 #
 
 function init_namespace() {
-  local namespaces=$(echo "$ORG0_NS $ORG1_NS $ORG2_NS" | xargs -n1 | sort -u)
+  local namespaces=$(echo "$ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS" | xargs -n1 | sort -u)
   for ns in $namespaces; do
     push_fn "Creating namespace \"$ns\""
     kubectl create namespace $ns || true
@@ -15,7 +15,7 @@ function init_namespace() {
 }
 
 function delete_namespace() {
-  local namespaces=$(echo "$ORG0_NS $ORG1_NS $ORG2_NS" | xargs -n1 | sort -u)
+  local namespaces=$(echo "$ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS" | xargs -n1 | sort -u)
   for ns in $namespaces; do
     push_fn "Deleting namespace \"$ns\""
     kubectl delete namespace $ns || true
@@ -42,6 +42,7 @@ function init_storage_volumes() {
   cat kube/pvc-fabric-org0.yaml | envsubst | kubectl -n $ORG0_NS create -f - || true
   cat kube/pvc-fabric-org1.yaml | envsubst | kubectl -n $ORG1_NS create -f - || true
   cat kube/pvc-fabric-org2.yaml | envsubst | kubectl -n $ORG2_NS create -f - || true
+  cat kube/pvc-fabric-org3.yaml | envsubst | kubectl -n $ORG3_NS create -f - || true
 
   pop_fn
 }
@@ -52,10 +53,12 @@ function load_org_config() {
   kubectl -n $ORG0_NS delete configmap org0-config || true
   kubectl -n $ORG1_NS delete configmap org1-config || true
   kubectl -n $ORG2_NS delete configmap org2-config || true
+  kubectl -n $ORG3_NS delete configmap org3-config || true
 
   kubectl -n $ORG0_NS create configmap org0-config --from-file=config/org0
   kubectl -n $ORG1_NS create configmap org1-config --from-file=config/org1
   kubectl -n $ORG2_NS create configmap org2-config --from-file=config/org2
+  kubectl -n $ORG3_NS create configmap org3-config --from-file=config/org3
 
   pop_fn
 }
@@ -74,9 +77,11 @@ function apply_k8s_builders() {
 
   apply_template kube/org1/org1-install-k8s-builder.yaml $ORG1_NS
   apply_template kube/org2/org2-install-k8s-builder.yaml $ORG2_NS
+  apply_template kube/org3/org3-install-k8s-builder.yaml $ORG3_NS
 
   kubectl -n $ORG1_NS wait --for=condition=complete --timeout=60s job/org1-install-k8s-builder
   kubectl -n $ORG2_NS wait --for=condition=complete --timeout=60s job/org2-install-k8s-builder
+  kubectl -n $ORG3_NS wait --for=condition=complete --timeout=60s job/org3-install-k8s-builder
 
   pop_fn
 }

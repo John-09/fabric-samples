@@ -26,11 +26,15 @@ function launch_peers() {
   apply_template kube/org1/org1-peer2.yaml $ORG1_NS
   apply_template kube/org2/org2-peer1.yaml $ORG2_NS
   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
+  apply_template kube/org3/org3-peer1.yaml $ORG3_NS
+  apply_template kube/org3/org3-peer2.yaml $ORG3_NS
 
   kubectl -n $ORG1_NS rollout status deploy/org1-peer1
   kubectl -n $ORG1_NS rollout status deploy/org1-peer2
   kubectl -n $ORG2_NS rollout status deploy/org2-peer1
   kubectl -n $ORG2_NS rollout status deploy/org2-peer2
+  kubectl -n $ORG3_NS rollout status deploy/org3-peer1
+  kubectl -n $ORG3_NS rollout status deploy/org3-peer2
 
   pop_fn
 }
@@ -122,6 +126,9 @@ function create_local_MSP() {
   create_peer_local_MSP org2 peer1 $ORG2_NS
   create_peer_local_MSP org2 peer2 $ORG2_NS
 
+  create_peer_local_MSP org2 peer1 $ORG3_NS
+  create_peer_local_MSP org2 peer2 $ORG3_NS
+
   pop_fn
 }
 
@@ -154,7 +161,7 @@ function network_up() {
 
 function stop_services() {
   push_fn "Stopping Fabric services"
-  for ns in $ORG0_NS $ORG1_NS $ORG2_NS; do
+  for ns in $ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS; do
     kubectl -n $ns delete ingress --all
     kubectl -n $ns delete deployment --all
     kubectl -n $ns delete pod --all
@@ -170,7 +177,7 @@ function stop_services() {
 
 function scrub_org_volumes() {
   push_fn "Scrubbing Fabric volumes"
-  for org in org0 org1 org2; do
+  for org in org0 org1 org2 org3; do
     # clean job to make this function can be rerun
     local namespace_variable=${org^^}_NS
     kubectl -n ${!namespace_variable} delete jobs --all
@@ -186,7 +193,7 @@ function scrub_org_volumes() {
 function network_down() {
 
   set +e
-  for ns in $ORG0_NS $ORG1_NS $ORG2_NS; do
+  for ns in $ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS; do
     kubectl get namespace $ns > /dev/null
     if [[ $? -ne 0 ]]; then
       echo "No namespace $ns found - nothing to do."
