@@ -162,7 +162,7 @@ function network_up() {
   # Test Network
   create_local_MSP
 
-  launch_orderers
+  # launch_orderers
   launch_peers
 }
 

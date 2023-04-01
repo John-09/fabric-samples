@@ -50,8 +50,8 @@ context CHAINCODE_BUILDER             ccaas                 # see https://github
 context K8S_CHAINCODE_BUILDER_IMAGE   ghcr.io/hyperledger-labs/k8s-fabric-peer
 context K8S_CHAINCODE_BUILDER_VERSION v0.7.2
 
-context LOG_FILE                      network1.log
-context DEBUG_FILE                    network1-debug.log
+context LOG_FILE                      network.log
+context DEBUG_FILE                    network-debug.log
 context LOG_ERROR_LINES               2
 context LOCAL_REGISTRY_NAME           kind-registry
 context LOCAL_REGISTRY_INTERFACE      127.0.0.1
@@ -93,17 +93,17 @@ function print_help() {
   echo todo: help output, parse mode, flags, env, etc.
 }
 
-# . scripts/utils1.sh
-# . scripts/prereqs1.sh
-# . scripts/kind1.sh
-# . scripts/cluster1.sh
+. scripts/utils.sh
+. scripts/prereqs.sh
+. scripts/kind.sh
+. scripts/cluster.sh
 . scripts/fabric_config1.sh
 . scripts/fabric_CAs1.sh
 . scripts/test_network1.sh
 . scripts/channel1.sh
-. scripts/chaincode1.sh
-. scripts/rest_sample1.sh
-. scripts/application_connection1.sh
+# . scripts/chaincode1.sh
+# . scripts/rest_sample1.sh
+# . scripts/application_connection1.sh
 
 # check for kind, kubectl, etc.
 check_prereqs
@@ -134,7 +134,7 @@ elif [[ "${MODE}" == "cluster" || "${MODE}" == "k8s" || "${MODE}" == "kube" ]]; 
   cluster_command_group $@
 
 elif [ "${MODE}" == "up" ]; then
-  log "Launching network1 \"${NETWORK_NAME}\":"
+  log "Launching network \"${NETWORK_NAME}\":"
   network_up
   log "🏁 - Network1 is ready."
 
