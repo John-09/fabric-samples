@@ -115,6 +115,40 @@ Organizations:
       - Host: org2-peer1.${ORG2_NS}.svc.cluster.local
         Port: 7051
 
+  - &Org3
+    # DefaultOrg defines the organization which is used in the sampleconfig
+    # of the fabric.git development environment
+    Name: Org3MSP
+
+    # ID to load the MSP definition as
+    ID: Org3MSP
+
+    MSPDir: ./channel-msp/peerOrganizations/org3/msp
+
+    # Policies defines the set of policies at this level of the config tree
+    # For organization policies, their canonical path is usually
+    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Org3MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('Org3MSP.peer')"
+
+    AnchorPeers:
+      # AnchorPeers defines the location of peers which can be used
+      # for cross org gossip communication.  Note, this value is only
+      # encoded in the genesis block in the Application section context
+      - Host: org3-peer1.${ORG3_NS}.svc.cluster.local
+        Port: 7051
+
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -200,10 +234,10 @@ Application: &ApplicationDefaults
       Rule: "MAJORITY Admins"
     LifecycleEndorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer')"
     Endorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer')"
 
   Capabilities:
     <<: *ApplicationCapabilities
@@ -360,6 +394,7 @@ Profiles:
       Organizations:
         - *Org1
         - *Org2
+        - *Org3
       Capabilities: *ApplicationCapabilities
 
 
@@ -385,6 +420,7 @@ Profiles:
         Organizations:
           - *Org1
           - *Org2
+          - *Org3
   TwoOrgsChannel:
     Consortium: SampleConsortium
     <<: *ChannelDefaults
@@ -393,6 +429,7 @@ Profiles:
       Organizations:
         - *Org1
         - *Org2
+        - *Org3
       Capabilities:
         <<: *ApplicationCapabilities
   Org1Channel:
@@ -411,5 +448,14 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *Org2
+      Capabilities:
+        <<: *ApplicationCapabilities
+  Org3Channel:
+    Consortium: SampleConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Org3
       Capabilities:
         <<: *ApplicationCapabilities

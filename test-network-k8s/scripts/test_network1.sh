@@ -5,36 +5,40 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-function launch_orderers() {
-  push_fn "Launching orderers"
+# function launch_orderers() {
+#   push_fn "Launching orderers"
 
-  apply_template kube/org0/org0-orderer1.yaml $ORG0_NS
-  apply_template kube/org0/org0-orderer2.yaml $ORG0_NS
-  apply_template kube/org0/org0-orderer3.yaml $ORG0_NS
+#   apply_template kube/org0/org0-orderer1.yaml $ORG0_NS
+#   apply_template kube/org0/org0-orderer2.yaml $ORG0_NS
+#   apply_template kube/org0/org0-orderer3.yaml $ORG0_NS
 
-  kubectl -n $ORG0_NS rollout status deploy/org0-orderer1
-  kubectl -n $ORG0_NS rollout status deploy/org0-orderer2
-  kubectl -n $ORG0_NS rollout status deploy/org0-orderer3
+#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer1
+#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer2
+#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer3
 
-  pop_fn
-}
+#   pop_fn
+# }
 
 function launch_peers() {
   push_fn "Launching peers"
 
-  apply_template kube/org1/org1-peer1.yaml $ORG1_NS
-  apply_template kube/org1/org1-peer2.yaml $ORG1_NS
-  apply_template kube/org2/org2-peer1.yaml $ORG2_NS
-  apply_template kube/org2/org2-peer2.yaml $ORG2_NS
-  apply_template kube/org3/org3-peer1.yaml $ORG3_NS
-  apply_template kube/org3/org3-peer2.yaml $ORG3_NS
+#   apply_template kube/org1/org1-peer1.yaml $ORG1_NS
+#   apply_template kube/org1/org1-peer2.yaml $ORG1_NS
+#   apply_template kube/org2/org2-peer1.yaml $ORG2_NS
+#   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
+#   apply_template kube/org3/org3-peer1.yaml $ORG3_NS
+#   apply_template kube/org3/org3-peer2.yaml $ORG3_NS
+  apply_template kube/org4/org4-peer1.yaml $ORG4_NS
+  apply_template kube/org4/org4-peer2.yaml $ORG4_NS
 
-  kubectl -n $ORG1_NS rollout status deploy/org1-peer1
-  kubectl -n $ORG1_NS rollout status deploy/org1-peer2
-  kubectl -n $ORG2_NS rollout status deploy/org2-peer1
-  kubectl -n $ORG2_NS rollout status deploy/org2-peer2
-  kubectl -n $ORG3_NS rollout status deploy/org3-peer1
-  kubectl -n $ORG3_NS rollout status deploy/org3-peer2
+  # kubectl -n $ORG1_NS rollout status deploy/org1-peer1
+  # kubectl -n $ORG1_NS rollout status deploy/org1-peer2
+  # kubectl -n $ORG2_NS rollout status deploy/org2-peer1
+  # kubectl -n $ORG2_NS rollout status deploy/org2-peer2
+  # kubectl -n $ORG3_NS rollout status deploy/org3-peer1
+  # kubectl -n $ORG3_NS rollout status deploy/org3-peer2
+  kubectl -n $ORG4_NS rollout status deploy/org4-peer1
+  kubectl -n $ORG4_NS rollout status deploy/org4-peer2
 
   pop_fn
 }
@@ -116,18 +120,21 @@ function create_peer_local_MSP() {
 function create_local_MSP() {
   push_fn "Creating local node MSP"
 
-  create_orderer_local_MSP org0 orderer1
-  create_orderer_local_MSP org0 orderer2
-  create_orderer_local_MSP org0 orderer3
+  # create_orderer_local_MSP org0 orderer1
+  # create_orderer_local_MSP org0 orderer2
+  # create_orderer_local_MSP org0 orderer3
 
-  create_peer_local_MSP org1 peer1 $ORG1_NS
-  create_peer_local_MSP org1 peer2 $ORG1_NS
+  # create_peer_local_MSP org1 peer1 $ORG1_NS
+  # create_peer_local_MSP org1 peer2 $ORG1_NS
 
-  create_peer_local_MSP org2 peer1 $ORG2_NS
-  create_peer_local_MSP org2 peer2 $ORG2_NS
+  # create_peer_local_MSP org2 peer1 $ORG2_NS
+  # create_peer_local_MSP org2 peer2 $ORG2_NS
 
-  create_peer_local_MSP org3 peer1 $ORG3_NS
-  create_peer_local_MSP org3 peer2 $ORG3_NS
+  # create_peer_local_MSP org3 peer1 $ORG3_NS
+  # create_peer_local_MSP org3 peer2 $ORG3_NS
+
+  create_peer_local_MSP org4 peer1 $ORG4_NS
+  create_peer_local_MSP org4 peer2 $ORG4_NS
 
   pop_fn
 }
@@ -161,7 +168,7 @@ function network_up() {
 
 function stop_services() {
   push_fn "Stopping Fabric services"
-  for ns in $ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS; do
+  for ns in $ORG4_NS; do
     kubectl -n $ns delete ingress --all
     kubectl -n $ns delete deployment --all
     kubectl -n $ns delete pod --all
@@ -177,7 +184,7 @@ function stop_services() {
 
 function scrub_org_volumes() {
   push_fn "Scrubbing Fabric volumes"
-  for org in org0 org1 org2 org3; do
+  for org in org4; do
     # clean job to make this function can be rerun
     local namespace_variable=${org^^}_NS
     kubectl -n ${!namespace_variable} delete jobs --all
@@ -193,7 +200,7 @@ function scrub_org_volumes() {
 function network_down() {
 
   set +e
-  for ns in $ORG0_NS $ORG1_NS $ORG2_NS $ORG3_NS; do
+  for ns in $ORG4_NS; do
     kubectl get namespace $ns > /dev/null
     if [[ $? -ne 0 ]]; then
       echo "No namespace $ns found - nothing to do."
