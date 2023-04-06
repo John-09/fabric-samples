@@ -6,7 +6,7 @@
 #
 
 function init_namespace() {
-  local namespaces=$(echo "$ORG4_NS" | xargs -n1 | sort -u)
+  local namespaces=$(echo "${NAMESPACE}" | xargs -n1 | sort -u)
   for ns in $namespaces; do
     push_fn "Creating namespace \"$ns\""
     kubectl create namespace $ns || true
@@ -15,7 +15,7 @@ function init_namespace() {
 }
 
 function delete_namespace() {
-  local namespaces=$(echo "$ORG4_NS" | xargs -n1 | sort -u)
+  local namespaces=$(echo "${NAMESPACE}" | xargs -n1 | sort -u)
   for ns in $namespaces; do
     push_fn "Deleting namespace \"$ns\""
     kubectl delete namespace $ns || true
@@ -39,7 +39,7 @@ function init_storage_volumes() {
     exit 1
   fi
 
-  cat kube/pvc-fabric-org4.yaml | envsubst | kubectl -n $ORG4_NS create -f - || true
+  cat kube/pvc-fabric-org.yaml | envsubst | kubectl -n ${NAMESPACE} create -f - || true
 
   pop_fn
 }
@@ -47,9 +47,9 @@ function init_storage_volumes() {
 function load_org_config() {
   push_fn "Creating fabric config maps"
 
-  kubectl -n $ORG4_NS delete configmap org4-config || true
+  kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-config || true
 
-  kubectl -n $ORG4_NS create configmap org4-config --from-file=config/org4
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=config/org
 
   pop_fn
 }
@@ -69,12 +69,12 @@ function apply_k8s_builders() {
 #   apply_template kube/org1/org1-install-k8s-builder.yaml $ORG1_NS
 #   apply_template kube/org2/org2-install-k8s-builder.yaml $ORG2_NS
 #   apply_template kube/org3/org3-install-k8s-builder.yaml $ORG3_NS
-  apply_template kube/org4/org4-install-k8s-builder.yaml $ORG4_NS
+  apply_template kube/${ORG_NAME}/org-install-k8s-builder.yaml ${NAMESPACE}
 
 #   kubectl -n $ORG1_NS wait --for=condition=complete --timeout=60s job/org1-install-k8s-builder
 #   kubectl -n $ORG2_NS wait --for=condition=complete --timeout=60s job/org2-install-k8s-builder
 #   kubectl -n $ORG3_NS wait --for=condition=complete --timeout=60s job/org3-install-k8s-builder
-  kubectl -n $ORG4_NS wait --for=condition=complete --timeout=60s job/org4-install-k8s-builder
+  kubectl -n ${NAMESPACE} wait --for=condition=complete --timeout=60s job/org-install-k8s-builder
 
   pop_fn
 }

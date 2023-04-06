@@ -86,7 +86,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: org4-ca
+  name: XYZ-ca
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -323,8 +323,8 @@ csr:
   hosts:
     - localhost
     - 127.0.0.1
-    - org4-ca
-    - org4-ca.${NS}.svc.cluster.local
+    - XYZ-ca
+    - XYZ-ca.${NS}.svc.cluster.local
   ca:
     expiry: 131400h
     pathlength: 1

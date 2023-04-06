@@ -24,10 +24,9 @@ spec:
             - -c
             - "rm -rvf /mnt/fabric-*/*"
           volumeMounts:
-            - name: fabric-org4-volume
-              mountPath: /mnt/fabric-org4
+            - name: fabric-XYZ-volume
+              mountPath: /mnt/fabric-XYZ
       volumes:
-        - name: fabric-org4-volume
+        - name: fabric-XYZ-volume
           persistentVolumeClaim:
-            claimName: fabric-org4
-
+            claimName: fabric-XYZ

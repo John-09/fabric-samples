@@ -7,7 +7,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: fabric-org4
+  name: fabric-XYZ
 spec:
   accessModes:
     - ReadWriteOnce

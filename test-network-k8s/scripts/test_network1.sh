@@ -28,8 +28,8 @@ function launch_peers() {
 #   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
 #   apply_template kube/org3/org3-peer1.yaml $ORG3_NS
 #   apply_template kube/org3/org3-peer2.yaml $ORG3_NS
-  apply_template kube/org4/org4-peer1.yaml $ORG4_NS
-  apply_template kube/org4/org4-peer2.yaml $ORG4_NS
+  apply_template kube/${ORG_NAME}/org-peer1.yaml ${NAMESPACE}
+  apply_template kube/${ORG_NAME}/org-peer2.yaml ${NAMESPACE}
 
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer1
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer2
@@ -37,8 +37,8 @@ function launch_peers() {
   # kubectl -n $ORG2_NS rollout status deploy/org2-peer2
   # kubectl -n $ORG3_NS rollout status deploy/org3-peer1
   # kubectl -n $ORG3_NS rollout status deploy/org3-peer2
-  kubectl -n $ORG4_NS rollout status deploy/org4-peer1
-  kubectl -n $ORG4_NS rollout status deploy/org4-peer2
+  kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}-peer1
+  kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}-peer2
 
   pop_fn
 }
@@ -72,16 +72,13 @@ function create_node_local_MSP() {
   # Enroll the node admin user from within k8s.  This will leave the certificates available on a volume share in the
   # cluster for access by the nodes when launching in a container.
   cat <<EOF | kubectl -n ${ns} exec deploy/${ca_name} -i -- /bin/sh
-
   set -x
   export FABRIC_CA_CLIENT_HOME=/var/hyperledger/fabric-ca-client
   export FABRIC_CA_CLIENT_TLS_CERTFILES=/var/hyperledger/fabric/config/tls/ca.crt
-
   fabric-ca-client enroll \
     --url https://${id_name}:${id_secret}@${ca_name} \
     --csr.hosts ${csr_hosts} \
     --mspdir /var/hyperledger/fabric/organizations/${node_type}Organizations/${org}.example.com/${node_type}s/${id_name}.${org}.example.com/msp
-
   # Create local MSP config.yaml
   echo "NodeOUs:
     Enable: true
@@ -133,8 +130,8 @@ function create_local_MSP() {
   # create_peer_local_MSP org3 peer1 $ORG3_NS
   # create_peer_local_MSP org3 peer2 $ORG3_NS
 
-  create_peer_local_MSP org4 peer1 $ORG4_NS
-  create_peer_local_MSP org4 peer2 $ORG4_NS
+  create_peer_local_MSP ${ORG_NAME} peer1 ${NAMESPACE}
+  create_peer_local_MSP ${ORG_NAME} peer2 ${NAMESPACE}
 
   pop_fn
 }
@@ -168,7 +165,7 @@ function network_up() {
 
 function stop_services() {
   push_fn "Stopping Fabric services"
-  for ns in $ORG4_NS; do
+  for ns in ${NAMESPACE}; do
     kubectl -n $ns delete ingress --all
     kubectl -n $ns delete deployment --all
     kubectl -n $ns delete pod --all
@@ -184,13 +181,13 @@ function stop_services() {
 
 function scrub_org_volumes() {
   push_fn "Scrubbing Fabric volumes"
-  for org in org4; do
+  for org in ${ORG_NAME}; do
     # clean job to make this function can be rerun
-    local namespace_variable=${org^^}_NS
+    local namespace_variable=${NAMESPACE}
     kubectl -n ${!namespace_variable} delete jobs --all
 
     # scrub all pv contents
-    kubectl -n ${!namespace_variable} create -f kube/${org}/${org}-job-scrub-fabric-volumes.yaml
+    kubectl -n ${!namespace_variable} create -f kube/${ORG_NAME}/${ORG_NAME}-job-scrub-fabric-volumes.yaml
     kubectl -n ${!namespace_variable} wait --for=condition=complete --timeout=60s job/job-scrub-fabric-volumes
     kubectl -n ${!namespace_variable} delete jobs --all
   done
@@ -200,7 +197,7 @@ function scrub_org_volumes() {
 function network_down() {
 
   set +e
-  for ns in $ORG4_NS; do
+  for ns in ${NAMESPACE}; do
     kubectl get namespace $ns > /dev/null
     if [[ $? -ne 0 ]]; then
       echo "No namespace $ns found - nothing to do."
@@ -210,9 +207,14 @@ function network_down() {
   set -e
 
   stop_services
-  scrub_org_volumes
 
   delete_namespace
 
-  rm -rf $PWD/build
+  rm -rf $PWD/build/cas/${ORG_NAME}-ca
+  rm -rf $PWD/build/enrollments/${ORG_NAME}
+  rm -rf $PWD/kube/${ORG_NAME}
+  rm -rf $PWD/config/${ORG_NAME}
+  
+
+  scrub_org_volumes
 }

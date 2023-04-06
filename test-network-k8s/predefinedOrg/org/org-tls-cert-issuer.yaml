@@ -7,14 +7,14 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: org4-tls-cert-issuer
+  name: XYZ-tls-cert-issuer
 spec:
   isCA: true
   privateKey:
     algorithm: ECDSA
     size: 256
-  commonName: org4.example.com
-  secretName: org4-tls-cert-issuer-secret
+  commonName: XYZ.example.com
+  secretName: XYZ-tls-cert-issuer-secret
   issuerRef:
     name: root-tls-cert-issuer
     kind: Issuer
@@ -24,9 +24,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: org4-tls-cert-issuer
+  name: XYZ-tls-cert-issuer
 spec:
   ca:
-    secretName: org4-tls-cert-issuer-secret
-
-
+    secretName: XYZ-tls-cert-issuer-secret

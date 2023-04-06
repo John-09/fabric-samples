@@ -7,13 +7,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: org4-install-k8s-builder
+  name: XYZ-install-k8s-builder
 spec:
   backoffLimit: 0
   completions: 1
   template:
     metadata:
-      name: org4-install-k8s-builder
+      name: XYZ-install-k8s-builder
     spec:
       restartPolicy: "Never"
       containers:
@@ -23,11 +23,11 @@ spec:
           command:
             - sh
             - -c
-            - "mkdir -p /mnt/fabric-org4/fabric/external_builders && cp -rv /opt/hyperledger/k8s_builder /mnt/fabric-org4/fabric/external_builders/"
+            - "mkdir -p /mnt/fabric-XYZ/fabric/external_builders && cp -rv /opt/hyperledger/k8s_builder /mnt/fabric-XYZ/fabric/external_builders/"
           volumeMounts:
-            - name: fabric-org4-volume
-              mountPath: /mnt/fabric-org4
+            - name: fabric-XYZ-volume
+              mountPath: /mnt/fabric-XYZ
       volumes:
-        - name: fabric-org4-volume
+        - name: fabric-XYZ-volume
           persistentVolumeClaim:
-            claimName: fabric-org4
+            claimName: fabric-XYZ

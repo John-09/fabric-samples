@@ -7,7 +7,7 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: org4-ca-tls-cert
+  name: XYZ-ca-tls-cert
 spec:
   isCA: false
   privateKey:
@@ -15,29 +15,29 @@ spec:
     size: 256
   dnsNames:
     - localhost
-    - org4-ca
-    - org4-ca.${ORG4_NS}.svc.cluster.local
-    - org4-ca.${DOMAIN}
+    - XYZ-ca
+    - XYZ-ca.${NAMESPACE}.svc.cluster.local
+    - XYZ-ca.${DOMAIN}
   ipAddresses:
     - 127.0.0.1
-  secretName: org4-ca-tls-cert
+  secretName: XYZ-ca-tls-cert
   issuerRef:
-    name: org4-tls-cert-issuer
+    name: XYZ-tls-cert-issuer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: org4-ca
+  name: XYZ-ca
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: org4-ca
+      app: XYZ-ca
   template:
     metadata:
       labels:
-        app: org4-ca
+        app: XYZ-ca
     spec:
       containers:
         - name: main
@@ -45,7 +45,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: FABRIC_CA_SERVER_CA_NAME
-              value: "org4-ca"
+              value: "XYZ-ca"
             - name: FABRIC_CA_SERVER_DEBUG
               value: "false"
             - name: FABRIC_CA_SERVER_HOME
@@ -75,25 +75,25 @@ spec:
       volumes:
         - name: fabric-volume
           persistentVolumeClaim:
-            claimName: fabric-org4
+            claimName: fabric-XYZ
         - name: fabric-config
           configMap:
-            name: org4-config
+            name: XYZ-config
         - name: tls-cert-volume
           secret:
-            secretName: org4-ca-tls-cert
+            secretName: XYZ-ca-tls-cert
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: org4-ca
+  name: XYZ-ca
 spec:
   ports:
     - name: https
       port: 443
       protocol: TCP
   selector:
-    app: org4-ca
+    app: XYZ-ca
     
 ---
 apiVersion: networking.k8s.io/v1
@@ -103,22 +103,22 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: 60s
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
   labels:
-    app: org4-ca
-  name: org4-ca
+    app: XYZ-ca
+  name: XYZ-ca
 spec:
   ingressClassName: nginx
   rules:
-    - host: org4-ca.${DOMAIN}
+    - host: XYZ-ca.${DOMAIN}
       http:
         paths:
           - backend:
               service:
-                name: org4-ca
+                name: XYZ-ca
                 port:
                   name: https
             path: /
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - org4-ca.${DOMAIN}
+        - XYZ-ca.${DOMAIN}
   

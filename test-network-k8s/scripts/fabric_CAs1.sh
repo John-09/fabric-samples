@@ -12,13 +12,13 @@ function launch_ECert_CAs() {
 #   apply_template kube/org1/org1-ca.yaml $ORG1_NS
 #   apply_template kube/org2/org2-ca.yaml $ORG2_NS
 #   apply_template kube/org3/org3-ca.yaml $ORG3_NS
-  apply_template kube/org4/org4-ca.yaml $ORG4_NS
+  apply_template kube/${ORG_NAME}/org-ca.yaml ${NAMESPACE}
 
 #   kubectl -n $ORG0_NS rollout status deploy/org0-ca
 #   kubectl -n $ORG1_NS rollout status deploy/org1-ca
 #   kubectl -n $ORG2_NS rollout status deploy/org2-ca
 #   kubectl -n $ORG3_NS rollout status deploy/org3-ca
-  kubectl -n $ORG4_NS rollout status deploy/org4-ca
+  kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}-ca
 
   # todo: this papers over a nasty bug whereby the CAs are ready, but sporadically refuse connections after a down / up
   sleep 5
@@ -40,21 +40,21 @@ function init_tls_cert_issuers() {
 #   kubectl -n $ORG2_NS wait --timeout=30s --for=condition=Ready issuer/root-tls-cert-issuer
 #   kubectl -n $ORG3_NS apply -f kube/root-tls-cert-issuer.yaml
 #   kubectl -n $ORG3_NS wait --timeout=30s --for=condition=Ready issuer/root-tls-cert-issuer
-  kubectl -n $ORG4_NS apply -f kube/root-tls-cert-issuer.yaml
-  kubectl -n $ORG4_NS wait --timeout=30s --for=condition=Ready issuer/root-tls-cert-issuer
+  kubectl -n ${NAMESPACE} apply -f kube/root-tls-cert-issuer.yaml
+  kubectl -n ${NAMESPACE} wait --timeout=30s --for=condition=Ready issuer/root-tls-cert-issuer
 
   # Use the self-signing issuer to generate three Issuers, one for each org.
 #   kubectl -n $ORG0_NS apply -f kube/org0/org0-tls-cert-issuer.yaml
 #   kubectl -n $ORG1_NS apply -f kube/org1/org1-tls-cert-issuer.yaml
 #   kubectl -n $ORG2_NS apply -f kube/org2/org2-tls-cert-issuer.yaml
 #   kubectl -n $ORG3_NS apply -f kube/org3/org3-tls-cert-issuer.yaml
-  kubectl -n $ORG4_NS apply -f kube/org4/org4-tls-cert-issuer.yaml
+  kubectl -n ${NAMESPACE} apply -f kube/${ORG_NAME}/${ORG_NAME}-tls-cert-issuer.yaml
 
 #   kubectl -n $ORG0_NS wait --timeout=30s --for=condition=Ready issuer/org0-tls-cert-issuer
 #   kubectl -n $ORG1_NS wait --timeout=30s --for=condition=Ready issuer/org1-tls-cert-issuer
 #   kubectl -n $ORG2_NS wait --timeout=30s --for=condition=Ready issuer/org2-tls-cert-issuer
 #   kubectl -n $ORG3_NS wait --timeout=30s --for=condition=Ready issuer/org3-tls-cert-issuer
-  kubectl -n $ORG4_NS wait --timeout=30s --for=condition=Ready issuer/org4-tls-cert-issuer
+  kubectl -n ${NAMESPACE} wait --timeout=30s --for=condition=Ready issuer/${ORG_NAME}-tls-cert-issuer
 
   pop_fn
 }
@@ -89,7 +89,7 @@ function enroll_bootstrap_ECert_CA_users() {
 #   enroll_bootstrap_ECert_CA_user org1 $ORG1_NS
 #   enroll_bootstrap_ECert_CA_user org2 $ORG2_NS
 #   enroll_bootstrap_ECert_CA_user org3 $ORG3_NS
-  enroll_bootstrap_ECert_CA_user org4 $ORG4_NS
+  enroll_bootstrap_ECert_CA_user ${ORG_NAME} ${NAMESPACE}
 
   pop_fn
 }
