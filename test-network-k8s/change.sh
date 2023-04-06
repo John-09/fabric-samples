@@ -35,3 +35,7 @@ awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-sample
 #org tls cer issuer file
 updated_file="/workspaces/fabric-samples/test-network-k8s/kube/${ORG_NAME}/${ORG_NAME}-tls-cert-issuer.yaml"
 awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/org/org-tls-cert-issuer.yaml > "$updated_file"
+
+#Updating channel yaml file
+
+awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/configtx-template1.yaml > /workspaces/fabric-samples/test-network-k8s/config/org0/configtx-template1.yaml

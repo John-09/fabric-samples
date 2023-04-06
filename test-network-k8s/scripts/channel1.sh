@@ -41,7 +41,7 @@ function register_org_admins() {
   # register_org_admin org1 org1admin org1adminpw
   # register_org_admin org2 org2admin org2adminpw
   # register_org_admin org3 org3admin org3adminpw
-  register_org_admin org4 org4admin org4adminpw
+  register_org_admin ${ORG_NAME} ${ORG_NAME}admin ${ORG_NAME}adminpw
 
   pop_fn
 }
@@ -73,7 +73,7 @@ function enroll_org_admins() {
   # enroll_org_admin peer     org1 org1admin org1adminpw
   # enroll_org_admin peer     org2 org2admin org2adminpw
   # enroll_org_admin peer     org3 org3admin org3adminpw
-  enroll_org_admin peer     org4 org4admin org4adminpw
+  enroll_org_admin peer     ${ORG_NAME} ${ORG_NAME}admin ${ORG_NAME}adminpw
 
   pop_fn
 }
@@ -154,7 +154,7 @@ function create_channel_MSP() {
   # create_channel_org_MSP org1 peer $ORG1_NS
   # create_channel_org_MSP org2 peer $ORG2_NS
   # create_channel_org_MSP org3 peer $ORG3_NS
-  create_channel_org_MSP org4 peer $ORG4_NS
+  create_channel_org_MSP ${ORG_NAME} peer ${NAMESPACE}
 
   # extract_orderer_tls_cert org0 orderer1
   # extract_orderer_tls_cert org0 orderer2
@@ -210,7 +210,7 @@ function create_channel_org_MSP() {
 
 function create_genesis_block() {
   push_fn "Creating channel genesis block"
-  cat ${PWD}/config/org0/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
+  cat ${PWD}/config/org0/configtx-template1.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
   FABRIC_CFG_PATH=${TEMP_DIR} \
     configtxgen \
       -profile      TwoOrgsApplicationGenesis \
@@ -255,7 +255,7 @@ function join_channel_peers() {
   # join_org_peers org1
   # join_org_peers org2
   # join_org_peers org3
-  join_org_peers org4
+  join_org_peers ${ORG_NAME}
 }
 
 function join_org_peers() {

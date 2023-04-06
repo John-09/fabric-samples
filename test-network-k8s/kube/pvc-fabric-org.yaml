@@ -7,7 +7,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: fabric-john
+  name: fabric-happy
 spec:
   accessModes:
     - ReadWriteOnce

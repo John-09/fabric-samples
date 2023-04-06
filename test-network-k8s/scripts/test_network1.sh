@@ -214,6 +214,7 @@ function network_down() {
   rm -rf $PWD/build/enrollments/${ORG_NAME}
   rm -rf $PWD/kube/${ORG_NAME}
   rm -rf $PWD/config/${ORG_NAME}
+  rm -rf $PWD/build/channel-msp/peerOrganizations/${ORG_NAME}
   
 
   scrub_org_volumes

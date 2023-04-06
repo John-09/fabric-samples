@@ -49,7 +49,7 @@ function load_org_config() {
 
   kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-config || true
 
-  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=config/org
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=config/${ORG_NAME}
 
   pop_fn
 }
