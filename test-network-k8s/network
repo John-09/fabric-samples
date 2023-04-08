@@ -96,6 +96,7 @@ function print_help() {
   echo todo: help output, parse mode, flags, env, etc.
 }
 
+# export ORG=Org1
 . scripts/utils.sh
 . scripts/prereqs.sh
 . scripts/kind.sh
@@ -104,9 +105,9 @@ function print_help() {
 . scripts/fabric_CAs.sh
 . scripts/test_network.sh
 . scripts/channel.sh
-# . scripts/chaincodeOrg1.sh
+. scripts/chaincode${ORG}.sh
 # . scripts/chaincodeOrg2.sh
-. scripts/chaincodeOrg3.sh
+# . scripts/chaincodeOrg3.sh
 . scripts/rest_sample.sh
 . scripts/application_connection.sh
 
