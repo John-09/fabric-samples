@@ -69,12 +69,12 @@ function apply_k8s_builders() {
 #   apply_template kube/org1/org1-install-k8s-builder.yaml $ORG1_NS
 #   apply_template kube/org2/org2-install-k8s-builder.yaml $ORG2_NS
 #   apply_template kube/org3/org3-install-k8s-builder.yaml $ORG3_NS
-  apply_template kube/${ORG_NAME}/org-install-k8s-builder.yaml ${NAMESPACE}
+  apply_template kube/${ORG_NAME}/${ORG_NAME}-install-k8s-builder.yaml ${NAMESPACE}
 
 #   kubectl -n $ORG1_NS wait --for=condition=complete --timeout=60s job/org1-install-k8s-builder
 #   kubectl -n $ORG2_NS wait --for=condition=complete --timeout=60s job/org2-install-k8s-builder
 #   kubectl -n $ORG3_NS wait --for=condition=complete --timeout=60s job/org3-install-k8s-builder
-  kubectl -n ${NAMESPACE} wait --for=condition=complete --timeout=60s job/org-install-k8s-builder
+  kubectl -n ${NAMESPACE} wait --for=condition=complete --timeout=60s job/${ORG_NAME}-install-k8s-builder
 
   pop_fn
 }

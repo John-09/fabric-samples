@@ -12,7 +12,7 @@ function launch_ECert_CAs() {
 #   apply_template kube/org1/org1-ca.yaml $ORG1_NS
 #   apply_template kube/org2/org2-ca.yaml $ORG2_NS
 #   apply_template kube/org3/org3-ca.yaml $ORG3_NS
-  apply_template kube/${ORG_NAME}/org-ca.yaml ${NAMESPACE}
+  apply_template kube/${ORG_NAME}/${ORG_NAME}-ca.yaml ${NAMESPACE}
 
 #   kubectl -n $ORG0_NS rollout status deploy/org0-ca
 #   kubectl -n $ORG1_NS rollout status deploy/org1-ca

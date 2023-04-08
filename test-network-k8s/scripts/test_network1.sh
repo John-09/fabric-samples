@@ -28,8 +28,8 @@ function launch_peers() {
 #   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
 #   apply_template kube/org3/org3-peer1.yaml $ORG3_NS
 #   apply_template kube/org3/org3-peer2.yaml $ORG3_NS
-  apply_template kube/${ORG_NAME}/org-peer1.yaml ${NAMESPACE}
-  apply_template kube/${ORG_NAME}/org-peer2.yaml ${NAMESPACE}
+  apply_template kube/${ORG_NAME}/${ORG_NAME}-peer1.yaml ${NAMESPACE}
+  apply_template kube/${ORG_NAME}/${ORG_NAME}-peer2.yaml ${NAMESPACE}
 
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer1
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer2
