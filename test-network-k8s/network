@@ -104,7 +104,9 @@ function print_help() {
 . scripts/fabric_CAs.sh
 . scripts/test_network.sh
 . scripts/channel.sh
-. scripts/chaincode.sh
+# . scripts/chaincodeOrg1.sh
+# . scripts/chaincodeOrg2.sh
+. scripts/chaincodeOrg3.sh
 . scripts/rest_sample.sh
 . scripts/application_connection.sh
 

@@ -18,7 +18,7 @@ mkdir -p "$updated_dir"
 awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/org/org-ca.yaml > /workspaces/fabric-samples/test-network-k8s/kube/${ORG_NAME}/org-ca.yaml
 
 #CC template file
-awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/org/org-cc-template.yaml > /workspaces/fabric-samples/test-network-k8s/kube/${ORG_NAME}/org-cc-template.yaml
+awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/org/org-cc-template.yaml > /workspaces/fabric-samples/test-network-k8s/kube/${ORG_NAME}/${ORG_NAME}-cc-template.yaml
 
 #k8s builder file
 awk -v org_name="$ORG_NAME" '{gsub(/XYZ/, org_name)}1' /workspaces/fabric-samples/test-network-k8s/predefinedOrg/org/org-install-k8s-builder.yaml > /workspaces/fabric-samples/test-network-k8s/kube/${ORG_NAME}/org-install-k8s-builder.yaml

@@ -101,9 +101,9 @@ function print_help() {
 . scripts/fabric_CAs1.sh
 . scripts/test_network1.sh
 . scripts/channel1.sh
-# . scripts/chaincode1.sh
-# . scripts/rest_sample1.sh
-# . scripts/application_connection1.sh
+. scripts/chaincodeAuto.sh
+. scripts/rest_sample.sh
+. scripts/application_connection.sh
 
 # check for kind, kubectl, etc.
 check_prereqs
