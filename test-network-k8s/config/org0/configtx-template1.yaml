@@ -149,15 +149,15 @@ Organizations:
       - Host: org3-peer1.${ORG3_NS}.svc.cluster.local
         Port: 7051
 
-  - &john
+  - &try
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: johnMSP
+    Name: tryMSP
 
     # ID to load the MSP definition as
-    ID: johnMSP
+    ID: tryMSP
 
-    MSPDir: ./channel-msp/peerOrganizations/john/msp
+    MSPDir: ./channel-msp/peerOrganizations/try/msp
 
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
@@ -165,22 +165,22 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('johnMSP.admin', 'johnMSP.peer', 'johnMSP.client')"
+        Rule: "OR('tryMSP.admin', 'tryMSP.peer', 'tryMSP.client')"
       Writers:
         Type: Signature
-        Rule: "OR('johnMSP.admin', 'johnMSP.client')"
+        Rule: "OR('tryMSP.admin', 'tryMSP.client')"
       Admins:
         Type: Signature
-        Rule: "OR('johnMSP.admin')"
+        Rule: "OR('tryMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('johnMSP.peer')"
+        Rule: "OR('tryMSP.peer')"
 
     AnchorPeers:
       # AnchorPeers defines the location of peers which can be used
       # for cross org gossip communication.  Note, this value is only
       # encoded in the genesis block in the Application section context
-      - Host: john-peer1.${NAMESPACE}.svc.cluster.local
+      - Host: try-peer1.${NAMESPACE}.svc.cluster.local
         Port: 7051
 
 ################################################################################
@@ -268,10 +268,10 @@ Application: &ApplicationDefaults
       Rule: "MAJORITY Admins"
     LifecycleEndorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','johnMSP.peer')"
+      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','tryMSP.peer')"
     Endorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','johnMSP.peer')"
+      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','tryMSP.peer')"
 
   Capabilities:
     <<: *ApplicationCapabilities
@@ -429,7 +429,7 @@ Profiles:
         - *Org1
         - *Org2
         - *Org3
-        - *john
+        - *try
       Capabilities: *ApplicationCapabilities
 
 
@@ -456,7 +456,7 @@ Profiles:
           - *Org1
           - *Org2
           - *Org3
-          - *john
+          - *try
   TwoOrgsChannel:
     Consortium: SampleConsortium
     <<: *ChannelDefaults
@@ -466,7 +466,7 @@ Profiles:
         - *Org1
         - *Org2
         - *Org3
-        - *john
+        - *try
       Capabilities:
         <<: *ApplicationCapabilities
   Org1Channel:
@@ -496,12 +496,12 @@ Profiles:
         - *Org3
       Capabilities:
         <<: *ApplicationCapabilities
-  johnChannel:
+  tryChannel:
     Consortium: SampleConsortium
     <<: *ChannelDefaults
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *john
+        - *try
       Capabilities:
         <<: *ApplicationCapabilities

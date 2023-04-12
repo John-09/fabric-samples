@@ -29,7 +29,7 @@ The _high level process_ is
 3. Create a chaincode package using the chaincode-as-a-service approach
 4. Install the chaincode to a peer and Approve/Commit the chaincode on a channel
 5. Start the chaincode using the chaincode-as-a-service approach
-6. Attach your debugger to the running chaincode and set a breakpoint
+6. Attach your debugger to the connection.jsonrunning chaincode and set a breakpoint
 7. Invoke a transaction, this will then halt in the debugger to let you step over the code
 8. Find the bugs and repeat **from step 5** - note that we don't need to Package/Install/Approve/Commit the chaincode again.
 
@@ -45,7 +45,7 @@ You'll need to have docker available to you, along with VSCode. Also, install th
 ### What is Chaincode as Service?
 
 The chaincode-as-a-service feature is a very useful and practical way to run 'Smart Contracts. Traditionally the Fabric Peer has taken on the role of orchestrating
-the complete lifecycle of the chaincode. It required access to the Docker Daemon to create images, and start containers. Java, Node.js and Go chaincode frameworks were
+the complete lifecycle of the cconnection.jsonhaincode. It required access to the Docker Daemon to create images, and start containers. Java, Node.js and Go chaincode frameworks were
  explicitly known to the peer including how they should be built and started.
 
 As a result, this makes it very hard to deploy into Kubernetes (K8S) style environments or to run in any form of debug mode. Additionally, the code is being rebuilt by

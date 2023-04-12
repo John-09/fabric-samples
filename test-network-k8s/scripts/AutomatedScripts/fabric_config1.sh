@@ -39,7 +39,8 @@ function init_storage_volumes() {
     exit 1
   fi
 
-  cat kube/pvc-fabric-org.yaml | envsubst | kubectl -n ${NAMESPACE} create -f - || true
+  cat kube/pvc-fabric-${ORG_NAME}orderer.yaml | envsubst | kubectl -n ${NAMESPACE} create -f - || true
+  cat kube/pvc-fabric-${ORG_NAME}.yaml | envsubst | kubectl -n ${NAMESPACE} create -f - || true
 
   pop_fn
 }
@@ -47,21 +48,23 @@ function init_storage_volumes() {
 function load_org_config() {
   push_fn "Creating fabric config maps"
 
+  kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-orderer-config || true
   kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-config || true
 
-  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=config/${ORG_NAME}
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}orderer-config --from-file=${ORG_NAME}-Network/config/${ORG_NAME}-orderer
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=${ORG_NAME}-Network/config/${ORG_NAME}
 
   pop_fn
 }
 
-# function apply_k8s_builder_roles() {
-#   push_fn "Applying k8s chaincode builder roles"
+function apply_k8s_builder_roles() {
+  push_fn "Applying k8s chaincode builder roles"
 
-#   apply_template kube/fabric-builder-role.yaml $ORG1_NS
-#   apply_template kube/fabric-builder-rolebinding.yaml $ORG1_NS
+  apply_template kube/fabric-builder-role.yaml $NAMESPACE
+  apply_template kube/fabric-builder-rolebinding1.yaml $NAMESPACE
 
-#   pop_fn
-# }
+  pop_fn
+}
 
 function apply_k8s_builders() {
   push_fn "Installing k8s chaincode builders"

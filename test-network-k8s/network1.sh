@@ -37,13 +37,13 @@ context CONTAINER_NAMESPACE           ""                    # or "--namespace k8
 
 context FABRIC_CONTAINER_REGISTRY     hyperledger
 context FABRIC_PEER_IMAGE             ${FABRIC_CONTAINER_REGISTRY}/fabric-peer:${FABRIC_VERSION}
-context NETWORK_NAME                  test-network
+context NETWORK_NAME                  ${NAMESPACE}
 context CLUSTER_NAME                  kind
 context KUBE_NAMESPACE                ${NETWORK_NAME}
 context NS                            ${KUBE_NAMESPACE}
 context ${NAMESPACE}                  ${NS}
 context DOMAIN                        localho.st
-context CHANNEL_NAME                  mychannel
+context CHANNEL_NAME                  ${ORG_CHANNEL}
 context ORDERER_TIMEOUT               10s                   # see https://github.com/hyperledger/fabric/issues/3372
 context TEMP_DIR                      ${PWD}/build
 context CHAINCODE_BUILDER             ccaas                 # see https://github.com/hyperledgendary/fabric-builder-k8s/blob/main/docs/TEST_NETWORK_K8S.md
@@ -97,11 +97,11 @@ function print_help() {
 . scripts/prereqs.sh
 . scripts/kind.sh
 . scripts/cluster.sh
-. scripts/fabric_config1.sh
-. scripts/fabric_CAs1.sh
-. scripts/test_network1.sh
-. scripts/channel1.sh
-. scripts/chaincodeAuto.sh
+. scripts/AutomatedScripts/fabric_config1.sh
+. scripts/AutomatedScripts/fabric_CAs1.sh
+. scripts/AutomatedScripts/test_network1.sh
+. scripts/AutomatedScripts/channel1.sh
+. scripts/AutomatedScripts/chaincodeAuto.sh
 . scripts/rest_sample.sh
 . scripts/application_connection.sh
 
@@ -139,7 +139,7 @@ elif [ "${MODE}" == "up" ]; then
   log "🏁 - Network1 is ready."
 
 elif [ "${MODE}" == "down" ]; then
-  log "Shutting down test network  \"${NETWORK_NAME}\":"
+  log "Shutting down network  \"${NETWORK_NAME}\":"
   network_down
   log "🏁 - Fabric network is down."
 

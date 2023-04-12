@@ -1,0 +1,124 @@
+#
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: XYZorderer-ca-tls-cert
+spec:
+  isCA: false
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  dnsNames:
+    - localhost
+    - XYZorderer-ca
+    - XYZorderer-ca.${ORG0_NS}.svc.cluster.local
+    - XYZorderer-ca.${DOMAIN}
+  ipAddresses:
+    - 127.0.0.1
+  secretName: XYZorderer-ca-tls-cert
+  issuerRef:
+    name: XYZorderer-tls-cert-issuer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: XYZorderer-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: XYZorderer-ca
+  template:
+    metadata:
+      labels:
+        app: XYZorderer-ca
+    spec:
+      containers:
+        - name: main
+          image: ${FABRIC_CONTAINER_REGISTRY}/fabric-ca:${FABRIC_CA_VERSION}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: "XYZorderer-ca"
+            - name: FABRIC_CA_SERVER_DEBUG
+              value: "false"
+            - name: FABRIC_CA_SERVER_HOME
+              value: "/var/hyperledger/fabric-ca-server"
+            - name: FABRIC_CA_SERVER_TLS_CERTFILE
+              value: "/var/hyperledger/fabric/config/tls/tls.crt"
+            - name: FABRIC_CA_SERVER_TLS_KEYFILE
+              value: "/var/hyperledger/fabric/config/tls/tls.key"
+            - name: FABRIC_CA_CLIENT_HOME
+              value: "/var/hyperledger/fabric-ca-client"
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - name: fabric-volume
+              mountPath: /var/hyperledger
+            - name: fabric-config
+              mountPath: /var/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+              subPath: fabric-ca-server-config.yaml
+            - name: tls-cert-volume
+              mountPath: /var/hyperledger/fabric/config/tls
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 443
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      volumes:
+        - name: fabric-volume
+          persistentVolumeClaim:
+            claimName: fabric-XYZorderer
+        - name: fabric-config
+          configMap:
+            name: XYZorderer-config
+        - name: tls-cert-volume
+          secret:
+            secretName: XYZorderer-ca-tls-cert
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: XYZorderer-ca
+spec:
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+  selector:
+    app: XYZorderer-ca
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: 60s
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  labels:
+    app: XYZorderer-ca
+  name: XYZorderer-ca
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: XYZorderer-ca.${DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: XYZorderer-ca
+                port:
+                  name: https
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+      - XYZorderer-ca.${DOMAIN}

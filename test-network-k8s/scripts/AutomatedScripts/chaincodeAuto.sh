@@ -188,9 +188,9 @@ function invoke_chaincode() {
     -n              $cc_name \
     -C              $CHANNEL_NAME \
     -c              $@ \
-    --orderer       org0-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
+    --orderer       ${ORG_NAME}orderer-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
     --connTimeout   ${ORDERER_TIMEOUT} \
-    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
+    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/${ORG_NAME}orderer/orderers/${ORG_NAME}orderer-orderer1/tls/signcerts/tls-cert.pem
 
   sleep 2
 }
@@ -298,7 +298,7 @@ function launch_chaincode_service() {
   # The chaincode endpoint needs to have the generated chaincode ID available in the environment.
   # This could be from a config map, a secret, or by directly editing the deployment spec.  Here we'll keep
   # things simple by using sed to substitute script variables into a yaml template.
-  cat kube/${org}/${org}-cc-template.yaml \
+  cat ${ORG_NAME}-Network/kube/${org}/${org}-cc-template.yaml \
     | sed 's,{{CHAINCODE_NAME}},'${cc_name}',g' \
     | sed 's,{{CHAINCODE_ID}},'${cc_id}',g' \
     | sed 's,{{CHAINCODE_IMAGE}},'${cc_image}',g' \
@@ -359,9 +359,9 @@ function approve_chaincode() {
     --version       1 \
     --package-id    ${cc_id} \
     --sequence      1 \
-    --orderer       org0-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
+    --orderer       ${ORG_NAME}orderer-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
     --connTimeout   ${ORDERER_TIMEOUT} \
-    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
+    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/${ORG_NAME}orderer/orderers/${ORG_NAME}orderer-orderer1/tls/signcerts/tls-cert.pem
 
   pop_fn
 }
@@ -381,9 +381,9 @@ function commit_chaincode() {
     --name          ${cc_name} \
     --version       1 \
     --sequence      1 \
-    --orderer       org0-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
+    --orderer       ${ORG_NAME}orderer-orderer1.${DOMAIN}:${NGINX_HTTPS_PORT} \
     --connTimeout   ${ORDERER_TIMEOUT} \
-    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
+    --tls --cafile  ${TEMP_DIR}/channel-msp/ordererOrganizations/${ORG_NAME}orderer/orderers/${ORG_NAME}orderer-orderer1/tls/signcerts/tls-cert.pem
 
   pop_fn
 }

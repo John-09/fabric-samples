@@ -1,7 +1,7 @@
 # Getting Started with a Smart Contract
 
 [PREVIOUS - Introduction](./00-Introduction.md) <==>  [NEXT Adding a Transaction Function](./02-Exercise-Adding-tx-function.md)
-
+connection.json
 ---
 
 Make sure you have cloned the workshop:

@@ -5,19 +5,19 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-# function launch_orderers() {
-#   push_fn "Launching orderers"
+function launch_orderers() {
+  push_fn "Launching orderers"
 
-#   apply_template kube/org0/org0-orderer1.yaml $ORG0_NS
-#   apply_template kube/org0/org0-orderer2.yaml $ORG0_NS
-#   apply_template kube/org0/org0-orderer3.yaml $ORG0_NS
+  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-orderer1.yaml ${NAMESPACE}
+  # apply_template kube/org0/org0-orderer2.yaml $ORG0_NS
+  # apply_template kube/org0/org0-orderer3.yaml $ORG0_NS
 
-#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer1
-#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer2
-#   kubectl -n $ORG0_NS rollout status deploy/org0-orderer3
+  kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}orderer-orderer1
+  # kubectl -n $ORG0_NS rollout status deploy/org0-orderer2
+  # kubectl -n $ORG0_NS rollout status deploy/org0-orderer3
 
-#   pop_fn
-# }
+  pop_fn
+}
 
 function launch_peers() {
   push_fn "Launching peers"
@@ -28,8 +28,8 @@ function launch_peers() {
 #   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
 #   apply_template kube/org3/org3-peer1.yaml $ORG3_NS
 #   apply_template kube/org3/org3-peer2.yaml $ORG3_NS
-  apply_template kube/${ORG_NAME}/${ORG_NAME}-peer1.yaml ${NAMESPACE}
-  apply_template kube/${ORG_NAME}/${ORG_NAME}-peer2.yaml ${NAMESPACE}
+  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-peer1.yaml ${NAMESPACE}
+  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-peer2.yaml ${NAMESPACE}
 
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer1
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer2
@@ -102,7 +102,7 @@ function create_orderer_local_MSP() {
   local orderer=$2
   local csr_hosts=${org}-${orderer}
 
-  create_node_local_MSP orderer $org $orderer $csr_hosts $ORG0_NS
+  create_node_local_MSP orderer $org $orderer $csr_hosts $NAMESPACE
 }
 
 function create_peer_local_MSP() {
@@ -117,7 +117,7 @@ function create_peer_local_MSP() {
 function create_local_MSP() {
   push_fn "Creating local node MSP"
 
-  # create_orderer_local_MSP org0 orderer1
+  create_orderer_local_MSP ${ORG_NAME}orderer orderer1
   # create_orderer_local_MSP org0 orderer2
   # create_orderer_local_MSP org0 orderer3
 
@@ -159,7 +159,7 @@ function network_up() {
   # Test Network
   create_local_MSP
 
-  # launch_orderers
+  launch_orderers
   launch_peers
 }
 
@@ -187,7 +187,8 @@ function scrub_org_volumes() {
     kubectl -n ${!namespace_variable} delete jobs --all
 
     # scrub all pv contents
-    kubectl -n ${!namespace_variable} create -f kube/${ORG_NAME}/${ORG_NAME}-job-scrub-fabric-volumes.yaml
+    kubectl -n ${!namespace_variable} create -f ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-job-scrub-fabric-volumes.yaml
+    kubectl -n ${!namespace_variable} create -f ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-job-scrub-fabric-volumes.yaml
     kubectl -n ${!namespace_variable} wait --for=condition=complete --timeout=60s job/job-scrub-fabric-volumes
     kubectl -n ${!namespace_variable} delete jobs --all
   done
@@ -211,10 +212,13 @@ function network_down() {
   delete_namespace
 
   rm -rf $PWD/build/cas/${ORG_NAME}-ca
+  rm -rf $PWD/build/cas/${ORG_NAME}orderer-ca
   rm -rf $PWD/build/enrollments/${ORG_NAME}
-  rm -rf $PWD/kube/${ORG_NAME}
+  rm -rf $PWD/build/enrollments/${ORG_NAME}orderer
+  rm -rf $PWD/${ORG_NAME}-Network
   rm -rf $PWD/config/${ORG_NAME}
   rm -rf $PWD/build/channel-msp/peerOrganizations/${ORG_NAME}
+  rm -rf $PWD/build/channel-msp/ordererOrganizations/${ORG_NAME}orderer
   
 
   scrub_org_volumes

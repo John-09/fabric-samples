@@ -30,14 +30,17 @@ function channel_up() {
   create_channel_MSP
   create_genesis_block
 
-  # join_channel_orderers
+  join_channel_orderers
   join_channel_peers
 }
+
+#export FABRIC_CFG_PATH=/workspaces/fabric-samples/test-network-k8s/kcg-Network/config/kcg
+
 
 function register_org_admins() {
   push_fn "Registering org Admin users"
 
-  # register_org_admin org0 org0admin org0adminpw
+  register_org_admin ${ORG_NAME}orderer ${ORG_NAME}ordereradmin ${ORG_NAME}ordereradminpw
   # register_org_admin org1 org1admin org1adminpw
   # register_org_admin org2 org2admin org2adminpw
   # register_org_admin org3 org3admin org3adminpw
@@ -69,7 +72,7 @@ function register_org_admin() {
 function enroll_org_admins() {
   push_fn "Enrolling org Admin users"
 
-  # enroll_org_admin orderer  org0 org0admin org0adminpw
+  enroll_org_admin orderer  ${ORG_NAME}orderer ${ORG_NAME}ordereradmin ${ORG_NAME}ordereradminpw
   # enroll_org_admin peer     org1 org1admin org1adminpw
   # enroll_org_admin peer     org2 org2admin org2adminpw
   # enroll_org_admin peer     org3 org3admin org3adminpw
@@ -150,15 +153,14 @@ EOF
 function create_channel_MSP() {
   push_fn "Creating channel MSP"
 
-  # create_channel_org_MSP org0 orderer $ORG0_NS
+  create_channel_org_MSP ${ORG_NAME}orderer orderer ${NAMESPACE}
   # create_channel_org_MSP org1 peer $ORG1_NS
   # create_channel_org_MSP org2 peer $ORG2_NS
   # create_channel_org_MSP org3 peer $ORG3_NS
   create_channel_org_MSP ${ORG_NAME} peer ${NAMESPACE}
 
-  # extract_orderer_tls_cert org0 orderer1
-  # extract_orderer_tls_cert org0 orderer2
-  # extract_orderer_tls_cert org0 orderer3
+  extract_orderer_tls_cert ${ORG_NAME}orderer orderer1
+
 
   pop_fn
 }
@@ -192,25 +194,25 @@ function create_channel_org_MSP() {
 }
 
 # Extract an orderer's TLS signing certificate for inclusion in the channel config block
-# function extract_orderer_tls_cert() {
-#   local org=$1
-#   local orderer=$2
-#   local ns=$ORG0_NS
+function extract_orderer_tls_cert() {
+  local org=$1
+  local orderer=$2
+  local ns=$NAMESPACE
 
-#   echo "Extracting TLS cert for $org $orderer"
+  echo "Extracting TLS cert for $org $orderer"
 
-#   ORDERER_TLS_DIR=${TEMP_DIR}/channel-msp/ordererOrganizations/${org}/orderers/${org}-${orderer}/tls
-#   mkdir -p $ORDERER_TLS_DIR/signcerts
+  ORDERER_TLS_DIR=${TEMP_DIR}/channel-msp/ordererOrganizations/${org}/orderers/${org}-${orderer}/tls
+  mkdir -p $ORDERER_TLS_DIR/signcerts
 
-#   kubectl -n $ns get secret ${org}-${orderer}-tls-cert -o json \
-#     | jq -r .data.\"tls.crt\" \
-#     | base64 -d \
-#     > ${ORDERER_TLS_DIR}/signcerts/tls-cert.pem
-# }
+  kubectl -n $ns get secret ${org}-${orderer}-tls-cert -o json \
+    | jq -r .data.\"tls.crt\" \
+    | base64 -d \
+    > ${ORDERER_TLS_DIR}/signcerts/tls-cert.pem
+}
 
 function create_genesis_block() {
   push_fn "Creating channel genesis block"
-  cat ${PWD}/config/org0/configtx-template1.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
+  cat ${PWD}/${ORG_NAME}-Network/config/${ORG_NAME}-orderer/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
   FABRIC_CFG_PATH=${TEMP_DIR} \
     configtxgen \
       -profile      TwoOrgsApplicationGenesis \
@@ -222,34 +224,33 @@ function create_genesis_block() {
   pop_fn
 }
 
-# function join_channel_orderers() {
-#   push_fn "Joining orderers to channel ${CHANNEL_NAME}"
+function join_channel_orderers() {
+  push_fn "Joining orderers to channel ${CHANNEL_NAME}"
 
-#   join_channel_orderer org0 orderer1
-#   join_channel_orderer org0 orderer2
-#   join_channel_orderer org0 orderer3
+  join_channel_orderer ${ORG_NAME}orderer orderer1
 
-#   # todo: readiness / liveiness equivalent for channel?  Needs a little bit to settle before peers can join.
-#   sleep 10
 
-#   pop_fn
-# }
+  # todo: readiness / liveiness equivalent for channel?  Needs a little bit to settle before peers can join.
+  sleep 10
+
+  pop_fn
+}
 
 # Request from the channel ADMIN api that the orderer joins the target channel
-# function join_channel_orderer() {
-#   local org=$1
-#   local orderer=$2
+function join_channel_orderer() {
+  local org=$1
+  local orderer=$2
 
-#   # The client certificate presented in this case is the admin user's enrollment key.  This is a stronger assertion
-#   # of identity than the Docker Compose network, which transmits the orderer node's TLS key pair directly
-#   osnadmin channel join \
-#     --orderer-address ${org}-${orderer}-admin.${DOMAIN}:${NGINX_HTTPS_PORT} \
-#     --ca-file         ${TEMP_DIR}/channel-msp/ordererOrganizations/${org}/orderers/${org}-${orderer}/tls/signcerts/tls-cert.pem \
-#     --client-cert     ${TEMP_DIR}/enrollments/${org}/users/${org}admin/msp/signcerts/cert.pem \
-#     --client-key      ${TEMP_DIR}/enrollments/${org}/users/${org}admin/msp/keystore/key.pem \
-#     --channelID       ${CHANNEL_NAME} \
-#     --config-block    ${TEMP_DIR}/genesis_block.pb
-# }
+  # The client certificate presented in this case is the admin user's enrollment key.  This is a stronger assertion
+  # of identity than the Docker Compose network, which transmits the orderer node's TLS key pair directly
+  osnadmin channel join \
+    --orderer-address ${org}-${orderer}-admin.${DOMAIN}:${NGINX_HTTPS_PORT} \
+    --ca-file         ${TEMP_DIR}/channel-msp/ordererOrganizations/${org}/orderers/${org}-${orderer}/tls/signcerts/tls-cert.pem \
+    --client-cert     ${TEMP_DIR}/enrollments/${org}/users/${org}admin/msp/signcerts/cert.pem \
+    --client-key      ${TEMP_DIR}/enrollments/${org}/users/${org}admin/msp/keystore/key.pem \
+    --channelID       ${CHANNEL_NAME} \
+    --config-block    ${TEMP_DIR}/genesis_block.pb
+}
 
 function join_channel_peers() {
   # join_org_peers org1
@@ -277,8 +278,8 @@ function join_channel_peer() {
 
   peer channel join \
     --blockpath   ${TEMP_DIR}/genesis_block.pb \
-    --orderer     org0-orderer1.${DOMAIN} \
+    --orderer     ${ORG_NAME}orderer-orderer1.${DOMAIN} \
     --connTimeout ${ORDERER_TIMEOUT} \
     --tls         \
-    --cafile      ${TEMP_DIR}/channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
+    --cafile      ${TEMP_DIR}/channel-msp/ordererOrganizations/${ORG_NAME}orderer/orderers/${ORG_NAME}orderer-orderer1/tls/signcerts/tls-cert.pem
 }

@@ -1,17 +1,17 @@
-# #Create kind cluster
-# echo "Creating cluster KIND"
+#Create kind cluster
+echo "Creating cluster KIND"
 
-# cd ..
-# kind create cluster
+cd ..
+kind create cluster
 
-# # export ORG=Org1
-# # chmod +x network
+# export ORG=Org1
+# chmod +x network
 
-# cd ./test-network-k8s
+cd ./test-network-k8s
 
-# echo "Initializing network files"
-# ./network kind
-# ./network cluster init
+echo "Initializing network files"
+./network kind
+./network cluster init
 
 #Create org and add peers to network
 echo "Creating orgo org1 org2 org3 and peers"
@@ -40,5 +40,11 @@ chmod +x network
 echo "Deploying chaincode in org3"
 ./network chaincode deploy asset-transfer-basic ../asset-transfer-basic/chaincode-java
 
-echo "Done"
+echo "Getting all pods"
+
+sleep 5
+
+kubectl get pods -A
+
+echo "DONE"
 

@@ -25,7 +25,7 @@ Organizations:
     ID: OrdererMSP
 
     # MSPDir is the filesystem path which contains the MSP configuration
-    MSPDir: ./channel-msp/ordererOrganizations/org0/msp
+    MSPDir: ./channel-msp/ordererOrganizations/XYZorderer/msp
 
     # Policies defines the set of policies at this level of the config tree
     # For organization policies, their canonical path is usually
@@ -42,112 +42,8 @@ Organizations:
         Rule: "OR('OrdererMSP.admin')"
 
     OrdererEndpoints:
-      - org0-orderer1.${ORG0_NS}.svc.cluster.local:6050
-      - org0-orderer2.${ORG0_NS}.svc.cluster.local:6050
-      - org0-orderer3.${ORG0_NS}.svc.cluster.local:6050
+      - XYZorderer-orderer1.${NAMESPACE}.svc.cluster.local:6050
 
-  - &Org1
-    # DefaultOrg defines the organization which is used in the sampleconfig
-    # of the fabric.git development environment
-    Name: Org1MSP
-
-    # ID to load the MSP definition as
-    ID: Org1MSP
-
-    MSPDir: ./channel-msp/peerOrganizations/org1/msp
-
-    # Policies defines the set of policies at this level of the config tree
-    # For organization policies, their canonical path is usually
-    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-    Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
-      Writers:
-        Type: Signature
-        Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
-      Admins:
-        Type: Signature
-        Rule: "OR('Org1MSP.admin')"
-      Endorsement:
-        Type: Signature
-        Rule: "OR('Org1MSP.peer')"
-
-    # leave this flag set to true.
-    AnchorPeers:
-      # AnchorPeers defines the location of peers which can be used
-      # for cross org gossip communication.  Note, this value is only
-      # encoded in the genesis block in the Application section context
-      - Host: org1-peer1.${ORG1_NS}.svc.cluster.local
-        Port: 7051
-
-  - &Org2
-    # DefaultOrg defines the organization which is used in the sampleconfig
-    # of the fabric.git development environment
-    Name: Org2MSP
-
-    # ID to load the MSP definition as
-    ID: Org2MSP
-
-    MSPDir: ./channel-msp/peerOrganizations/org2/msp
-
-    # Policies defines the set of policies at this level of the config tree
-    # For organization policies, their canonical path is usually
-    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-    Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
-      Writers:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
-      Admins:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin')"
-      Endorsement:
-        Type: Signature
-        Rule: "OR('Org2MSP.peer')"
-
-    AnchorPeers:
-      # AnchorPeers defines the location of peers which can be used
-      # for cross org gossip communication.  Note, this value is only
-      # encoded in the genesis block in the Application section context
-      - Host: org2-peer1.${ORG2_NS}.svc.cluster.local
-        Port: 7051
-
-  - &Org3
-    # DefaultOrg defines the organization which is used in the sampleconfig
-    # of the fabric.git development environment
-    Name: Org3MSP
-
-    # ID to load the MSP definition as
-    ID: Org3MSP
-
-    MSPDir: ./channel-msp/peerOrganizations/org3/msp
-
-    # Policies defines the set of policies at this level of the config tree
-    # For organization policies, their canonical path is usually
-    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-    Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
-      Writers:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
-      Admins:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin')"
-      Endorsement:
-        Type: Signature
-        Rule: "OR('Org3MSP.peer')"
-
-    AnchorPeers:
-      # AnchorPeers defines the location of peers which can be used
-      # for cross org gossip communication.  Note, this value is only
-      # encoded in the genesis block in the Application section context
-      - Host: org3-peer1.${ORG3_NS}.svc.cluster.local
-        Port: 7051
 
   - &XYZ
     # DefaultOrg defines the organization which is used in the sampleconfig
@@ -268,10 +164,10 @@ Application: &ApplicationDefaults
       Rule: "MAJORITY Admins"
     LifecycleEndorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','XYZMSP.peer')"
+      Rule: "OR('XYZMSP.peer')"
     Endorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer','Org3MSP.peer','XYZMSP.peer')"
+      Rule: "OR('XYZMSP.peer')"
 
   Capabilities:
     <<: *ApplicationCapabilities
@@ -290,20 +186,11 @@ Orderer: &OrdererDefaults
 
   EtcdRaft:
     Consenters:
-      - Host: org0-orderer1
+      - Host: XYZorderer-orderer1
         Port: 6050
-        ClientTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
-        ServerTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer1/tls/signcerts/tls-cert.pem
-      - Host: org0-orderer2
-        Port: 6050
-        ClientTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer2/tls/signcerts/tls-cert.pem
-        ServerTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer2/tls/signcerts/tls-cert.pem
-      - Host: org0-orderer3
-        Port: 6050
-        ClientTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer3/tls/signcerts/tls-cert.pem
-        ServerTLSCert: ./channel-msp/ordererOrganizations/org0/orderers/org0-orderer3/tls/signcerts/tls-cert.pem
-
-
+        ClientTLSCert: ./channel-msp/ordererOrganizations/XYZorderer/orderers/XYZorderer-orderer1/tls/signcerts/tls-cert.pem
+        ServerTLSCert: ./channel-msp/ordererOrganizations/XYZorderer/orderers/XYZorderer-orderer1/tls/signcerts/tls-cert.pem
+    
     # Options to be specified for all the etcd/raft nodes. The values here
     # are the defaults for all new channels and can be modified on a
     # per-channel basis via configuration updates.
@@ -426,9 +313,6 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *Org1
-        - *Org2
-        - *Org3
         - *XYZ
       Capabilities: *ApplicationCapabilities
 
@@ -453,9 +337,6 @@ Profiles:
     Consortiums:
       SampleConsortium:
         Organizations:
-          - *Org1
-          - *Org2
-          - *Org3
           - *XYZ
   TwoOrgsChannel:
     Consortium: SampleConsortium
@@ -463,37 +344,7 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *Org1
-        - *Org2
-        - *Org3
         - *XYZ
-      Capabilities:
-        <<: *ApplicationCapabilities
-  Org1Channel:
-    Consortium: SampleConsortium
-    <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Org1
-      Capabilities:
-        <<: *ApplicationCapabilities
-  Org2Channel:
-    Consortium: SampleConsortium
-    <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Org2
-      Capabilities:
-        <<: *ApplicationCapabilities
-  Org3Channel:
-    Consortium: SampleConsortium
-    <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Org3
       Capabilities:
         <<: *ApplicationCapabilities
   XYZChannel:
