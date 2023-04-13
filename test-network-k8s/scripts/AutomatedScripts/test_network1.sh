@@ -209,7 +209,11 @@ function network_down() {
 
   stop_services
 
+  # scrub_org_volumes
+
   delete_namespace
+
+  
 
   rm -rf $PWD/build/cas/${ORG_NAME}-ca
   rm -rf $PWD/build/cas/${ORG_NAME}orderer-ca
@@ -217,9 +221,9 @@ function network_down() {
   rm -rf $PWD/build/enrollments/${ORG_NAME}orderer
   rm -rf $PWD/${ORG_NAME}-Network
   rm -rf $PWD/config/${ORG_NAME}
+  rm -rf $PWD/kube/pvc-fabric-${ORG_NAME}orderer.yaml
+  rm -rf $PWD/kube/pvc-fabric-${ORG_NAME}.yaml
   rm -rf $PWD/build/channel-msp/peerOrganizations/${ORG_NAME}
   rm -rf $PWD/build/channel-msp/ordererOrganizations/${ORG_NAME}orderer
-  
-
-  scrub_org_volumes
+   
 }

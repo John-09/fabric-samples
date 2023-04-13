@@ -141,7 +141,7 @@ elif [ "${MODE}" == "up" ]; then
 elif [ "${MODE}" == "down" ]; then
   log "Shutting down network  \"${NETWORK_NAME}\":"
   network_down
-  log "🏁 - Fabric network is down."
+  log "🏁 - ${NAMESPACE} network is down."
 
 elif [ "${MODE}" == "channel" ]; then
   channel_command_group $@
