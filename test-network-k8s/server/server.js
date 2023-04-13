@@ -221,6 +221,41 @@ async function main() {
     });
   });
 
+  app.post('/deployChaincode', (req, res) => {
+    // const cmd = req.body.cmd;
+    const {ORG_NAME, NAMESPACE ,ORG_CHANNEL ,CHAINCODE_NAME, PATH_TO_CHAINCODE} = req.body;
+  
+    const deployChaincode = spawn('./network1.sh', ['chaincode', 'deploy', CHAINCODE_NAME, PATH_TO_CHAINCODE], {
+      cwd: '../',
+      env: {
+        ...process.env,
+        ORG_NAME:ORG_NAME,
+        NAMESPACE:NAMESPACE,
+        ORG_CHANNEL:ORG_CHANNEL,
+        CHAINCODE_NAME: CHAINCODE_NAME,
+        PATH_TO_CHAINCODE: PATH_TO_CHAINCODE
+      },
+    });
+  
+    deployChaincode.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+  
+    deployChaincode.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
+  
+    deployChaincode.on('error', (error) => {
+      console.error(`error: ${error.message}`);
+      return res.status(500).json({ error: 'Failed to deploy chaincode.' });
+    });
+  
+    deployChaincode.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      return res.status(200).json({ message: 'Chaincode deployed successfully.' });
+    });
+  });
+
   app.get("/teardown_network", (req, res) => {
     const { spawn } = require("child_process");
     const cmd = spawn("./network", ["down"], { cwd: "../" });
