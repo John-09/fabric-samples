@@ -149,11 +149,13 @@ function query_chaincode() {
   set -x
 
   export_peer_context org1 peer1
+  echo $CC $CHANNEL_NAME $@
 
   peer chaincode query \
     -n  $cc_name \
     -C  $CHANNEL_NAME \
     -c  $@
+  peer channel list
 }
 
 function query_chaincode_metadata() {

@@ -101,6 +101,7 @@ function print_help() {
 . scripts/AutomatedScripts/fabric_CAs1.sh
 . scripts/AutomatedScripts/test_network1.sh
 . scripts/AutomatedScripts/channel1.sh
+. scripts/AutomatedScripts/channelDefualt.sh
 . scripts/AutomatedScripts/chaincodeAuto.sh
 . scripts/rest_sample.sh
 . scripts/application_connection.sh
@@ -144,7 +145,12 @@ elif [ "${MODE}" == "down" ]; then
   log "🏁 - ${NAMESPACE} network is down."
 
 elif [ "${MODE}" == "channel" ]; then
+  log "Main"
   channel_command_group $@
+
+elif [ "${MODE}" == "channeldefault" ]; then
+  log "Default"
+  channel_command_group_default $@
 
 elif [[ "${MODE}" == "chaincode" || "${MODE}" == "cc" ]]; then
   chaincode_command_group $@

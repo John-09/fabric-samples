@@ -214,12 +214,25 @@ async function main() {
   
     createChannel.on('close', (code) => {
       if (code === 0) {
+        defaultChannel(ORG_NAME, NAMESPACE);
         res.status(200).send('Channel created successfully.');
       } else {
         res.status(500).send('Failed to create channel.');
       }
     });
   });
+
+  function defaultChannel(ORG_NAME, NAMESPACE) {
+    const { exec } = require('child_process');
+  
+    exec(`export ORG_CHANNEL=mychannel && export ORG_NAME=${ORG_NAME} && export NAMESPACE=${NAMESPACE}  && cd .. && ./network1.sh channeldefault create`, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`Error executing script: ${err}`);
+        return;
+      }
+      console.log(stdout);
+    });
+  }
 
   app.post('/deployChaincode', (req, res) => {
     // const cmd = req.body.cmd;

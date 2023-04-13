@@ -5,15 +5,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-function channel_command_group() {
+function channel_command_group_default() {
   # set -x
 
   COMMAND=$1
   shift
-  log "maiin channnel"
+
   if [ "${COMMAND}" == "create" ]; then
     log "Creating channel \"${CHANNEL_NAME}\":"
-    channel_up
+    channel_up_default
     log "🏁 - Channel is ready."
 
   else
@@ -22,16 +22,15 @@ function channel_command_group() {
   fi
 }
 
-function channel_up() {
+function channel_up_default() {
 
-  log "main"
-  register_org_admins
-  enroll_org_admins
+  # register_org_admins
+  # enroll_org_admins
 
-  create_channel_MSP
+  # create_channel_MSP
   create_genesis_block
 
-  join_channel_orderers
+  # join_channel_orderers
   join_channel_peers
 }
 
