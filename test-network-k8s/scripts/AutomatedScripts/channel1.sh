@@ -213,7 +213,7 @@ function extract_orderer_tls_cert() {
 
 function create_genesis_block() {
   push_fn "Creating channel genesis block"
-  cat ${PWD}/${ORG_NAME}-Network/config/${ORG_NAME}-orderer/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
+  cat ${PWD}/${NAMESPACE}/config/${ORG_NAME}-orderer/configtx-template.yaml | envsubst > ${TEMP_DIR}/configtx.yaml
   FABRIC_CFG_PATH=${TEMP_DIR} \
     configtxgen \
       -profile      TwoOrgsApplicationGenesis \

@@ -51,8 +51,8 @@ function load_org_config() {
   kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-orderer-config || true
   kubectl -n ${NAMESPACE} delete configmap ${ORG_NAME}-config || true
 
-  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}orderer-config --from-file=${ORG_NAME}-Network/config/${ORG_NAME}-orderer
-  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=${ORG_NAME}-Network/config/${ORG_NAME}
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}orderer-config --from-file=${NAMESPACE}/config/${ORG_NAME}-orderer
+  kubectl -n ${NAMESPACE} create configmap ${ORG_NAME}-config --from-file=${NAMESPACE}/config/${ORG_NAME}
 
   pop_fn
 }

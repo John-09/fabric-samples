@@ -11,8 +11,8 @@ function launch_ECert_CAs() {
 #   apply_template kube/org0/org0-ca.yaml $ORG0_NS
 #   apply_template kube/org1/org1-ca.yaml $ORG1_NS
 #   apply_template kube/org2/org2-ca.yaml $ORG2_NS
-  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-ca.yaml $NAMESPACE
-  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-ca.yaml ${NAMESPACE}
+  apply_template ${NAMESPACE}/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-ca.yaml $NAMESPACE
+  apply_template ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-ca.yaml ${NAMESPACE}
 
 
 #   kubectl -n $ORG1_NS rollout status deploy/org1-ca
@@ -49,8 +49,8 @@ function init_tls_cert_issuers() {
 #   kubectl -n $ORG1_NS apply -f kube/org1/org1-tls-cert-issuer.yaml
 #   kubectl -n $ORG2_NS apply -f kube/org2/org2-tls-cert-issuer.yaml
 #   kubectl -n $ORG3_NS apply -f kube/org3/org3-tls-cert-issuer.yaml
-  kubectl -n ${NAMESPACE} apply -f ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-tls-cert-issuer.yaml
-  kubectl -n ${NAMESPACE} apply -f ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-tls-cert-issuer.yaml
+  kubectl -n ${NAMESPACE} apply -f ${NAMESPACE}/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-tls-cert-issuer.yaml
+  kubectl -n ${NAMESPACE} apply -f ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-tls-cert-issuer.yaml
 
 #   kubectl -n $ORG0_NS wait --timeout=30s --for=condition=Ready issuer/org0-tls-cert-issuer
 #   kubectl -n $ORG1_NS wait --timeout=30s --for=condition=Ready issuer/org1-tls-cert-issuer

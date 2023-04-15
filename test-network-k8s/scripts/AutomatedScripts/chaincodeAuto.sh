@@ -301,7 +301,7 @@ function launch_chaincode_service() {
   # The chaincode endpoint needs to have the generated chaincode ID available in the environment.
   # This could be from a config map, a secret, or by directly editing the deployment spec.  Here we'll keep
   # things simple by using sed to substitute script variables into a yaml template.
-  cat ${ORG_NAME}-Network/kube/${org}/${org}-cc-template.yaml \
+  cat ${NAMESPACE}/kube/${org}/${org}-cc-template.yaml \
     | sed 's,{{CHAINCODE_NAME}},'${cc_name}',g' \
     | sed 's,{{CHAINCODE_ID}},'${cc_id}',g' \
     | sed 's,{{CHAINCODE_IMAGE}},'${cc_image}',g' \

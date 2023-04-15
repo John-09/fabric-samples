@@ -8,7 +8,7 @@
 function launch_orderers() {
   push_fn "Launching orderers"
 
-  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-orderer1.yaml ${NAMESPACE}
+  apply_template ${NAMESPACE}/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-orderer1.yaml ${NAMESPACE}
   # apply_template kube/org0/org0-orderer2.yaml $ORG0_NS
   # apply_template kube/org0/org0-orderer3.yaml $ORG0_NS
 
@@ -28,8 +28,8 @@ function launch_peers() {
 #   apply_template kube/org2/org2-peer2.yaml $ORG2_NS
 #   apply_template kube/org3/org3-peer1.yaml $ORG3_NS
 #   apply_template kube/org3/org3-peer2.yaml $ORG3_NS
-  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-peer1.yaml ${NAMESPACE}
-  apply_template ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-peer2.yaml ${NAMESPACE}
+  apply_template ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-peer1.yaml ${NAMESPACE}
+  apply_template ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-peer2.yaml ${NAMESPACE}
 
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer1
   # kubectl -n $ORG1_NS rollout status deploy/org1-peer2
@@ -187,8 +187,8 @@ function scrub_org_volumes() {
     kubectl -n ${!namespace_variable} delete jobs --all
 
     # scrub all pv contents
-    kubectl -n ${!namespace_variable} create -f ${ORG_NAME}-Network/kube/${ORG_NAME}/${ORG_NAME}-job-scrub-fabric-volumes.yaml
-    kubectl -n ${!namespace_variable} create -f ${ORG_NAME}-Network/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-job-scrub-fabric-volumes.yaml
+    kubectl -n ${!namespace_variable} create -f ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-job-scrub-fabric-volumes.yaml
+    kubectl -n ${!namespace_variable} create -f ${NAMESPACE}/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-job-scrub-fabric-volumes.yaml
     kubectl -n ${!namespace_variable} wait --for=condition=complete --timeout=60s job/job-scrub-fabric-volumes
     kubectl -n ${!namespace_variable} delete jobs --all
   done
@@ -219,7 +219,7 @@ function network_down() {
   rm -rf $PWD/build/cas/${ORG_NAME}orderer-ca
   rm -rf $PWD/build/enrollments/${ORG_NAME}
   rm -rf $PWD/build/enrollments/${ORG_NAME}orderer
-  rm -rf $PWD/${ORG_NAME}-Network
+  rm -rf $PWD/${NAMESPACE}
   rm -rf $PWD/config/${ORG_NAME}
   rm -rf $PWD/kube/pvc-fabric-${ORG_NAME}orderer.yaml
   rm -rf $PWD/kube/pvc-fabric-${ORG_NAME}.yaml

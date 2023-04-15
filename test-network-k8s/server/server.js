@@ -25,6 +25,41 @@ async function main() {
   );
   app.use(cookieParser());
 
+  app.get("/defaultNetwork", (req, res) => {
+    console.log("entered template");
+    const child = exec("./fullscript.sh", { cwd: "../" });
+    this.commom_emit(req, res, child);
+  });
+
+  app.get("/kindInit", (req, res) => {
+    console.log("entered create_template");
+    // check if cluster exists
+    check_cluster();
+    if (stdout === "Cluster exists") {
+      console.log("cluster exists");
+      res.status(200).send("Cluster exists");
+    } else {
+      console.log("cluster does not exist");
+      console.log("creating cluster");
+      //how to run shell script from nodejs
+      const { spawn } = require("child_process");
+      const cmd = spawn("./network", ["kind"], { cwd: "../" });
+      cmd.stdout.pipe(res);
+      cmd.stderr.pipe(res);
+      cmd.on("close", (code) => {
+        console.log(`child process exited with code ${code}`);
+        // network cluster init
+        const cmd2 = spawn("./network", ["cluster", "init"], { cwd: "../" });
+        cmd2.stdout.pipe(res);
+        cmd2.stderr.pipe(res);
+        cmd2.on("close", (code) => {
+          console.log(`child process exited with code ${code}`);
+          res.status(200).send("Cluster created");
+        });
+      });
+    }
+  });
+
   app.get("/check_cluster", (req, res) => {
     const { exec } = require("child_process");
     exec("kubectl get pods -A", (err, stdout, stderr) => {
@@ -75,69 +110,6 @@ async function main() {
     });
   };
 
-  // app.get("/kindInit", (req, res) => {
-  //   console.log("entered create_template");
-  //   // check if cluster exists
-  //   check_cluster();
-  //   if (stdout === "Cluster exists") {
-  //     console.log("cluster exists");
-  //   } else {
-  //     console.log("cluster does not exist");
-  //     console.log("creating cluster");
-  //     //how to run shell script from nodejs
-  //     const { spawn } = require("child_process");
-  //     const cmd = spawn("./network", ["kind"], { cwd: "../" });
-  //     cmd.stdout.on("data", (data) => {
-  //       console.log(`${data}`);
-  //     });
-  //     cmd.stderr.on("data", (data) => {
-  //       console.error(`stderr: ${data}`);
-  //     });
-  //     cmd.on("close", (code) => {
-  //       console.log(`child process exited with code ${code}`);
-
-  //       // network cluster init
-  //       const cmd2 = spawn("./network", ["cluster", "init"], { cwd: "../" });
-  //       this.commom_emit(req, res, cmd2);
-  //     });
-  //   }
-  // });
-
-  app.get("/kindInit", (req, res) => {
-    console.log("entered create_template");
-    // check if cluster exists
-    check_cluster();
-    if (stdout === "Cluster exists") {
-      console.log("cluster exists");
-      res.status(200).send("Cluster exists");
-    } else {
-      console.log("cluster does not exist");
-      console.log("creating cluster");
-      //how to run shell script from nodejs
-      const { spawn } = require("child_process");
-      const cmd = spawn("./network", ["kind"], { cwd: "../" });
-      cmd.stdout.pipe(res);
-      cmd.stderr.pipe(res);
-      cmd.on("close", (code) => {
-        console.log(`child process exited with code ${code}`);
-        // network cluster init
-        const cmd2 = spawn("./network", ["cluster", "init"], { cwd: "../" });
-        cmd2.stdout.pipe(res);
-        cmd2.stderr.pipe(res);
-        cmd2.on("close", (code) => {
-          console.log(`child process exited with code ${code}`);
-          res.status(200).send("Cluster created");
-        });
-      });
-    }
-  });
-
-  //fullscript.sh
-  app.get("/defaultNetwork", (req, res) => {
-    console.log("entered template");
-    const child = exec("./fullscript.sh", { cwd: "../" });
-    this.commom_emit(req, res, child);
-  });
 
   app.post("/createOrg", async (req, res) => {
     console.log("Creating org");
@@ -225,7 +197,7 @@ async function main() {
   function defaultChannel(ORG_NAME, NAMESPACE) {
     const { exec } = require('child_process');
   
-    exec(`export ORG_CHANNEL=mychannel && export ORG_NAME=${ORG_NAME} && export NAMESPACE=${NAMESPACE}  && cd .. && ./network1.sh channeldefault create`, (err, stdout, stderr) => {
+    exec(`export ORG_CHANNEL=hyperbase && export ORG_NAME=${ORG_NAME} && export NAMESPACE=${NAMESPACE}  && cd .. && ./network1.sh channeldefault create`, (err, stdout, stderr) => {
       if (err) {
         console.error(`Error executing script: ${err}`);
         return;
@@ -340,3 +312,8 @@ async function main() {
 }
 
 main();
+
+
+
+// query
+// login
