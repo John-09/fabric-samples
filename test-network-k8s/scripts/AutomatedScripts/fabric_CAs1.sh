@@ -8,16 +8,9 @@
 function launch_ECert_CAs() {
   push_fn "Launching Fabric CAs"
 
-#   apply_template kube/org0/org0-ca.yaml $ORG0_NS
-#   apply_template kube/org1/org1-ca.yaml $ORG1_NS
-#   apply_template kube/org2/org2-ca.yaml $ORG2_NS
   apply_template ${NAMESPACE}/kube/${ORG_NAME}orderer/${ORG_NAME}orderer-ca.yaml $NAMESPACE
   apply_template ${NAMESPACE}/kube/${ORG_NAME}/${ORG_NAME}-ca.yaml ${NAMESPACE}
 
-
-#   kubectl -n $ORG1_NS rollout status deploy/org1-ca
-#   kubectl -n $ORG2_NS rollout status deploy/org2-ca
-#   kubectl -n $ORG3_NS rollout status deploy/org3-ca
   kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}orderer-ca
   kubectl -n ${NAMESPACE} rollout status deploy/${ORG_NAME}-ca
 

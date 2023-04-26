@@ -208,17 +208,16 @@ async function main() {
 
   app.post('/deployChaincode', (req, res) => {
     // const cmd = req.body.cmd;
-    const {ORG_NAME, NAMESPACE ,ORG_CHANNEL ,CHAINCODE_NAME, PATH_TO_CHAINCODE} = req.body;
+    const {ORG_NAME, NAMESPACE ,ORG_CHANNEL ,CHAINCODE_NAME} = req.body;
   
-    const deployChaincode = spawn('./network1.sh', ['chaincode', 'deploy', CHAINCODE_NAME, PATH_TO_CHAINCODE], {
+    const deployChaincode = spawn('./network1.sh', ['chaincode', 'deploy', CHAINCODE_NAME, '../asset-transfer-basic/chaincode-java'], {
       cwd: '../',
       env: {
         ...process.env,
         ORG_NAME:ORG_NAME,
         NAMESPACE:NAMESPACE,
         ORG_CHANNEL:ORG_CHANNEL,
-        CHAINCODE_NAME: CHAINCODE_NAME,
-        PATH_TO_CHAINCODE: PATH_TO_CHAINCODE
+        CHAINCODE_NAME: CHAINCODE_NAME
       },
     });
   
@@ -240,6 +239,45 @@ async function main() {
       return res.status(200).json({ message: 'Chaincode deployed successfully.' });
     });
   });
+
+
+app.post('/query', (req, res) => {
+  const { ORG_NAME,NAMESPACE ,ORG_CHANNEL ,CHAINCODE_NAME, ARGS } = req.body;
+
+  // Set environment variables from request body
+  const env = {
+    ORG_NAME:ORG_NAME,
+    NAMESPACE:NAMESPACE,
+    ORG_CHANNEL:ORG_CHANNEL,
+    CHAINCODE_NAME: CHAINCODE_NAME,
+    ARGS: ARGS
+  };
+
+  // Execute the invoke command
+  const invokeCmd = `sh -c "./network1.sh chaincode invoke $CHAINCODE_NAME '{\\"Args\\":[\\"InitLedger\\"]}'"`;
+  exec(invokeCmd,{ cwd: '../', env }, (err, stdout, stderr) => {
+    if (err) {
+      console.error(`Error executing command: ${invokeCmd}`);
+      console.error(stderr);
+      return res.status(500).send({ error: 'Error invoking chaincode' });
+    }
+
+    console.log(`Successfully invoked chaincode ${CHAINCODE_NAME}`);
+
+    // Execute the query command
+    const queryCmd = `./network1.sh chaincode query $CHAINCODE_NAME $ARGS`;
+    exec(queryCmd, { cwd: '../', env }, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`Error executing command: ${queryCmd}`);
+        console.error(stderr);
+        return res.status(500).send({ error: 'Error querying chaincode' });
+      }
+
+      console.log(`Successfully queried chaincode ${CHAINCODE_NAME}`);
+      res.send({ result: stdout });
+    });
+  });
+});
 
   app.get("/teardown_network", (req, res) => {
     const { spawn } = require("child_process");

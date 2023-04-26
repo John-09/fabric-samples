@@ -151,7 +151,7 @@ Capabilities:
         # features of fabric v2.5, namely the ability to purge private data.
         # Prior to enabling V2.5 application capabilities, ensure that all
         # peers on a channel are at v2.5.0 or later.
-        V2_5: true
+        V2_0: true
 
 ################################################################################
 #

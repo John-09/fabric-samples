@@ -153,14 +153,14 @@ function query_chaincode() {
   set -x
 
   export_peer_context ${ORG_NAME} peer1
-  echo $cc_name $CHANNEL_NAME $@
+  # echo $cc_name $CHANNEL_NAME $@
 
-  peer chaincode query \
-    -n  $cc_name \
-    -C  $CHANNEL_NAME \
-    -c  $@
+  # peer chaincode query \
+  #   -n  $cc_name \
+  #   -C  $CHANNEL_NAME \
+  #   -c  $@
   peer channel list
-  peer lifecycle chaincode queryinstalled
+  # peer lifecycle chaincode queryinstalled
 }
 
 function query_chaincode_metadata() {
@@ -354,7 +354,7 @@ function approve_chaincode() {
   push_fn "Approving chaincode ${cc_name} with ID ${cc_id}"
 
   export_peer_context $org $peer
-
+  log "${ORG_NAME}orderer"
   peer lifecycle \
     chaincode approveformyorg \
     --channelID     ${CHANNEL_NAME} \
@@ -377,7 +377,7 @@ function commit_chaincode() {
   push_fn "Committing chaincode ${cc_name}"
 
   export_peer_context $org $peer
-
+  log "${ORG_NAME}"
   peer lifecycle \
     chaincode commit \
     --channelID     ${CHANNEL_NAME} \
