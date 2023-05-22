@@ -25,6 +25,8 @@ echo "Adding org0 org1 org2 org3 to mychannel"
 echo "Deploying chaincode in org1"
 ./network chaincode deploy asset-transfer-basic ../asset-transfer-basic/chaincode-java
 
+./network chaincode invoke asset-transfer-basic '{"Args":["InitLedger"]}'
+
 
 export ORG=Org2
 chmod +x network
@@ -33,12 +35,16 @@ chmod +x network
 echo "Deploying chaincode in org2"
 ./network chaincode deploy asset-transfer-basic ../asset-transfer-basic/chaincode-java
 
+./network chaincode invoke asset-transfer-basic '{"Args":["InitLedger"]}'
+
 export ORG=Org3
 chmod +x network
 
 # Installing chaincode in org3
 echo "Deploying chaincode in org3"
 ./network chaincode deploy asset-transfer-basic ../asset-transfer-basic/chaincode-java
+
+./network chaincode invoke asset-transfer-basic '{"Args":["InitLedger"]}'
 
 echo "Getting all pods"
 

@@ -6,15 +6,6 @@
 #
 set -o errexit
 
-# todo: better handling for input parameters.  Argbash?
-# todo: skip storage volume init if deploying to a remote / cloud cluster (ICP IKS ROKS etc...)
-# todo: for logging, set up a stack and allow multi-line status output codes
-# todo: user:pass auth for tls and ecert bootstrap admins.  here and in the server-config.yaml
-# todo: refactor chaincode install to support other chaincode routines
-# todo: allow the user to specify the chaincode name (hardcoded as 'basic') both in install and invoke/query
-# todo: track down a nasty bug whereby the CA service endpoints (kube services) will occasionally reject TCP connections after network down/up.  This is patched by introducing a 10s sleep after the deployments are up...
-
-# todo: allow relative paths for input arguments.
 cd "$(dirname "$0")"
 
 # Set an environment variable based on an optional override (TEST_NETWORK_${name})
@@ -96,7 +87,6 @@ function print_help() {
   echo todo: help output, parse mode, flags, env, etc.
 }
 
-# export ORG=Org1
 . scripts/utils.sh
 . scripts/prereqs.sh
 . scripts/kind.sh
@@ -106,8 +96,6 @@ function print_help() {
 . scripts/test_network.sh
 . scripts/channel.sh
 . scripts/chaincode${ORG}.sh
-# . scripts/chaincodeOrg2.sh
-# . scripts/chaincodeOrg3.sh
 . scripts/rest_sample.sh
 . scripts/application_connection.sh
 

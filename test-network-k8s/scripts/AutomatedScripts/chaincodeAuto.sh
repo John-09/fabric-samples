@@ -60,6 +60,9 @@ function chaincode_command_group() {
   elif [ "${COMMAND}" == "metadata" ]; then
     query_chaincode_metadata $@ >> ${LOG_FILE}
 
+  elif [ "${COMMAND}" == "listchannel" ]; then
+    channel_list $@ >> ${LOG_FILE}
+
   else
     print_help
     exit 1
@@ -155,10 +158,23 @@ function query_chaincode() {
   export_peer_context ${ORG_NAME} peer1
   # echo $cc_name $CHANNEL_NAME $@
 
-  # peer chaincode query \
-  #   -n  $cc_name \
-  #   -C  $CHANNEL_NAME \
-  #   -c  $@
+  peer chaincode query \
+    -n  $cc_name \
+    -C  $CHANNEL_NAME \
+    -c  $@
+  # peer channel list
+  # peer lifecycle chaincode queryinstalled
+}
+
+function channel_list() {
+  #local cc_name=$1
+  # shift
+
+  set -x
+
+
+  export_peer_context ${ORG_NAME} peer1
+
   peer channel list
   # peer lifecycle chaincode queryinstalled
 }

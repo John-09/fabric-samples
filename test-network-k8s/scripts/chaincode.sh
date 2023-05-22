@@ -56,7 +56,7 @@ function chaincode_command_group() {
 
   elif [ "${COMMAND}" == "query" ]; then
     query_chaincode $@ >> ${LOG_FILE}
-
+  
   elif [ "${COMMAND}" == "metadata" ]; then
     query_chaincode_metadata $@ >> ${LOG_FILE}
 

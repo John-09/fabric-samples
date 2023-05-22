@@ -6,10 +6,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const http = require("http");
-// const socketio = require("socket.io");
 const bodyParser = require("body-parser");
-// const io = require("socket.io")(http);
-// const auth = require("./controllers/utils/login.js");
 const { spawn } = require('child_process');
 const { uptime, stdout, exit } = require("process");
 const { exec } = require("child_process");
@@ -279,6 +276,45 @@ app.post('/query', (req, res) => {
   });
 });
 
+app.post('/listchannel', (req, res) => {
+  const { ORG_NAME, NAMESPACE} = req.body;
+
+  const child = spawn('./network1.sh', ['chaincode', 'listchannel'], {
+    cwd: "../",
+    env: {
+      ...process.env,
+      ORG_NAME:ORG_NAME,
+      NAMESPACE:NAMESPACE
+      // ORG_CHANNEL: ORG_CHANNEL      
+    }
+  });
+  // const scriptPath = path.join(__dirname, '..', 'network1.sh');
+  // const command = `cd .. && ORG_NAME=${org_name} ${scriptPath} chaincode listchannel cmd`;
+
+  console.log(`Received org_name: ${ORG_NAME}`);
+
+  // const child = spawn('/bin/bash', ['-c', command]);
+
+  let output = '';
+
+  child.stdout.on('data', (data) => {
+    output += data.toString();
+    console.log(data.toString());
+  });
+
+  child.stderr.on('data', (data) => {
+    console.error(data.toString());
+  });
+
+  child.on('exit', (code) => {
+    console.log(`child process exited with code ${code}`);
+    if (code !== 0) {
+      return res.status(500).send('Server Error');
+    }
+    res.send(output);
+  });
+});
+
   app.get("/teardown_network", (req, res) => {
     const { spawn } = require("child_process");
     const cmd = spawn("./network", ["down"], { cwd: "../" });
@@ -353,5 +389,3 @@ main();
 
 
 
-// query
-// login
